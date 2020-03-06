@@ -1,0 +1,9 @@
+G:\001Work\GameTool\Client\Client\Client\bin\Debug\Client.exe.config
+G:\001Work\GameTool\Client\Client\Client\bin\Debug\Client.exe
+G:\001Work\GameTool\Client\Client\Client\bin\Debug\Client.pdb
+G:\001Work\GameTool\Client\Client\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+G:\001Work\GameTool\Client\Client\Client\obj\Debug\Client.exe
+G:\001Work\GameTool\Client\Client\Client\obj\Debug\Client.pdb
+G:\001Work\Socket_git\GameTool\Client\Client\Client\bin\Debug\Client.exe.config
+G:\001Work\Socket_git\GameTool\Client\Client\Client\obj\Debug\Client.exe
+G:\001Work\Socket_git\GameTool\Client\Client\Client\obj\Debug\Client.pdb
