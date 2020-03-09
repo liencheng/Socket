@@ -1,3 +1,5 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+
 #pragma once
 #include "stdafx.h"
 #include "winsock2.h"

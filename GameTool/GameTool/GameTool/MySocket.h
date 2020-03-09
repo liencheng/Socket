@@ -6,6 +6,7 @@
 class MySocket
 {
 public:
+	MySocket() {};
 	MySocket(SOCKET sock, sockaddr_in addr_in)
 		:m_socket(sock),
 		m_addr_in(addr_in)
