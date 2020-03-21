@@ -1,5 +1,0 @@
-﻿  ToolManager.cpp
-g:\001work\gametool\gametool\gametool\toolmanager.cpp(61): warning C4018: “<”: 有符号/无符号不匹配
-g:\001work\gametool\gametool\gametool\toolmanager.cpp(82): warning C4018: “<”: 有符号/无符号不匹配
-g:\001work\gametool\gametool\gametool\toolmanager.cpp(118): warning C4018: “<”: 有符号/无符号不匹配
-  GameTool.vcxproj -> G:\001Work\GameTool\GameTool\Debug\GameTool.exe
