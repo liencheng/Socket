@@ -48,9 +48,10 @@ namespace Client
                 ClientRobotLogic nl = new ClientRobotLogic(sp);
                 nlPool.Add(nl);
             }
+            nlPool.ForEach(nl => nl.Update());
             do
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(10000);
                 nlPool.ForEach(nl => nl.Update());
                 Console.WriteLine("Tick Main.total:" + nlPool.Count);
             } while(true);

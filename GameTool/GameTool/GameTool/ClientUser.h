@@ -8,11 +8,11 @@ class ClientUser
 public:
 	ClientUser(int userId, MySocket& sock)
 		:m_UserId(userId)
-		, m_Socket(sock)
+		, m_socket(sock)
 	{};
 	~ClientUser() {};
 
 public:
 	int m_UserId;
-	MySocket m_Socket;
+	MySocket m_socket;
 };

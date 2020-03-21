@@ -8,21 +8,26 @@
 #include "MySocket.h"
 #include <vector>
 
-using namespace std;
+#include "ThreadPool.h"
+
 
 #define SERVER_ADDR ("127.0.0.1")
 #define	PORT (2718)
 #define BLOCK_LOG_MAX (2000)
+#define THREAD_POOL_COUNT (10)
 
 #pragma comment(lib, "WS2_32.lib")
 
 class ToolManager
 {
 public:
-	ToolManager(){ Clean(); };
+	ToolManager() :m_rThreadPool(MyThreadPool(THREAD_POOL_COUNT))
+	{ Clean(); };
+
 	~ToolManager(){
 		WSACleanup();
 	};
+
 
 	void Clean()
 	{
@@ -37,7 +42,7 @@ public:
 		int nret =WSAStartup(MAKEWORD(2, 2), &m_wsadata);
 		if (nret == SOCKET_ERROR)
 		{
-			cout << "start up error" << endl;
+			std::cout << "start up error" << endl;
 			return;
 		}
 	}
@@ -47,15 +52,15 @@ public:
 		
 		if (m_listensocket == SOCKET_ERROR)
 		{
-			cout << "socket error" << endl;
+			std::cout << "socket error" << endl;
 			return;
 		}
 
-		int nRet = bind(m_listensocket, (sockaddr*)(&m_addr_in), sizeof(m_addr_in));
+		int nRet = ::bind(m_listensocket, (sockaddr*)(&m_addr_in), sizeof(m_addr_in));
 
 		if (nRet == SOCKET_ERROR)
 		{
-			cout << "bind error" << endl;
+			std::cout << "bind error" << endl;
 			return;
 		}
 
@@ -63,7 +68,7 @@ public:
 
 		if (nRet == SOCKET_ERROR)
 		{
-			cout << "listen error" << endl;
+			std::cout << "listen error" << endl;
 			return;
 		}
 
@@ -71,13 +76,13 @@ public:
 		ULONG NonBlock = 1;
 		if (ioctlsocket(m_listensocket, FIONBIO, &NonBlock))
 		{
-			cout<<"ioctlsocket() failed with error:" <<WSAGetLastError()<<endl;
+			std::cout<<"ioctlsocket() failed with error:" <<WSAGetLastError()<<endl;
 			return;
 		}
 
 		m_socket_count += 1;
 
-		cout << "listen..ok." << endl;
+		std::cout << "listen..ok." << endl;
 	}
 
 	void InitAddr()
@@ -86,7 +91,7 @@ public:
 		m_addr_in.sin_family = AF_INET;
 		m_addr_in.sin_addr.S_un.S_addr = inet_addr(SERVER_ADDR);
 		m_addr_in.sin_port = htons(PORT);
-		cout << "init addr ok." << endl;
+		std::cout << "init addr ok." << endl;
 	}
 
 	void Tick()
@@ -115,4 +120,6 @@ private:
 	fd_set m_fs_write;
 	fd_set m_fs_exception;
 	WSADATA m_wsadata;
+
+	MyThreadPool m_rThreadPool;
 };

@@ -40,12 +40,13 @@ void ToolManager::AcceptNewPlayer()
 		return;
 	}
 
-	MySocket player(sock, addr_in);
+	MySocket mySock(sock, addr_in);
 
-	m_player_list.push_back(player);
+	ClientUser user(1, mySock);
+	m_rThreadPool.PushUser(user);
+	//m_player_list.push_back(mySock);
 
 	cout << "accept succ." << endl;
-	cout << "cur player count:" << m_player_list.size() << endl;
 }
 
 void ToolManager::Tick_ProcessSocket()
