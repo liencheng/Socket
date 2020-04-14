@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+message test_msg
+{
+	int32 test = 1;
+}
+
+message CS_PING
+{
+	int32 m_AnsiTime = 1;
+}
+
+message SC_PONG
+{
+	int32 m_AnsiTime = 1;
+}
