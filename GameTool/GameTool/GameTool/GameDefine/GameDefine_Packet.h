@@ -1,13 +1,24 @@
 #pragma once
 
-enum PacketDefine
+#define  PACK_HEAD_LENGTH (sizeof(int) + sizeof(int))
+
+
+enum PACKET_TYPE
 {
+	INVALID = -1,
 	CS_PING = 1,
 	SC_PONG = 2,
 };
 
-enum PACKET_TYPE
+class PACK_SIZE
 {
-	CS_PING = 1,
-	SC_PONG = 1,
+public:
+	enum
+	{
+		SIZE_512 = 512,
+		SIZE_1024 = 1024,
+		SIZE_2048 = 2048,
+		SIZE_4096 = 4096,
+		SIZE_8192 = 8192,
+	};
 };

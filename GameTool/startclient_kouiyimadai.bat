@@ -1,2 +1,2 @@
-start ./Client/Client/Client/bin/Debug/Client.exe "2" 200
+start ./Client/Client/Client/bin/Debug/Client.exe "2" 2
 

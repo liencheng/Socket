@@ -6,7 +6,6 @@ void ToolManager::Tick_NewConnet()
 	fd_set fd_reader;
 	fd_set fd_writer;
 	fd_set fd_exception;
-
 	FD_ZERO(&fd_reader);
 	FD_ZERO(&fd_writer);
 	FD_ZERO(&fd_exception);

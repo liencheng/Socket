@@ -71,7 +71,7 @@ class MyThreadPool
 #define LOCK std::lock_guard<std::mutex> lock(m_mutex);
 
 public:
-	MyThreadPool(){};
+	MyThreadPool();;
 	MyThreadPool(int nThreadCnt)
 		:m_nThreadCount(nThreadCnt)
 	{

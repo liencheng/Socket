@@ -43,6 +43,13 @@ namespace Client
                 Console.WriteLine("KouyimadaiLogic Logic.");
             }
 
+            if(args[0] == "3")
+            {
+                sp = SendPacketEnum.SendNum;
+                Console.WriteLine("SendNum Logic.");
+            }
+
+
             for(int idx = 0; idx < nlCt; ++idx)
             {
                 ClientRobotLogic nl = new ClientRobotLogic(sp);
@@ -51,7 +58,7 @@ namespace Client
             nlPool.ForEach(nl => nl.Update());
             do
             {
-                Thread.Sleep(10000);
+                Thread.Sleep(1000);
                 nlPool.ForEach(nl => nl.Update());
                 Console.WriteLine("Tick Main.total:" + nlPool.Count);
             } while(true);
