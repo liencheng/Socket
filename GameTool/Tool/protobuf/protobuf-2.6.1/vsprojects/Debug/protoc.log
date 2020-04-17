@@ -1,0 +1,4 @@
+﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V120\Microsoft.CppBuild.targets(381,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (libprotobuf-lite.vcxproj, libprotobuf.vcxproj, libprotoc.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  main.cc
+g:\001work\gametool\gametool\tool\protobuf\protobuf-2.6.1\src\google\protobuf\compiler\main.cc : fatal error C1041: 无法打开程序数据库“g:\001work\gametool\gametool\tool\protobuf\protobuf-2.6.1\vsprojects\debug\vc120.pdb”；如果要将多个 CL.EXE 写入同一个 .PDB 文件，请使用 /FS
+cl : 命令行 warning D9028: 最小重新生成失败，正在转换为标准生成
