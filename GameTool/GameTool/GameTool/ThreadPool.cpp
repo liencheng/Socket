@@ -7,6 +7,10 @@
 
 using namespace std;
 
+std::mutex g_mutex;
+
+#define LOCK std::lock_guard<std::mutex> lock(g_mutex);
+
 void MyThread::StartThread()
 {
 	m_thread = std::thread(&MyThread::Tick, this);
@@ -18,6 +22,7 @@ void MyThread::Tick()
 	int idx = 0;
 	while (true)
 	{
+		Sleep(10);
 		ReqUser();
 		Tick_ProcessSocket();
 		Tick_ProcessInput();
@@ -72,10 +77,11 @@ void MyThread::Tick_ProcessInput()
 		SOCKET sock = m_UserVec[idx].m_socket.m_socket;
 		if (FD_ISSET(sock, &m_fs_read))
 		{
-			char buf[2048];
+			byte buf[2048];
 			memset(buf, 0, sizeof(buf));
-			int recvlen = recv(sock, buf, sizeof(buf), 0);
-
+			int nRcvData1 = 0;
+			int recvlen =  recv(sock, (char*)(buf), sizeof(buf), 0);
+				
 			if (recvlen == 0)
 			{
 				cout << "socket has been closed. sock:" << sock << endl;
@@ -86,12 +92,9 @@ void MyThread::Tick_ProcessInput()
 			}
 			else
 			{
-				nValidSock++;
-				char* outbuf = new char[recvlen + 1];
-				memcpy(outbuf, buf, recvlen);
-				outbuf[recvlen] = 0;
-				cout << "recv data," << outbuf << " ,pid:"<<GetCurrentThreadId()<<endl;
-				delete outbuf;
+				InputStream &sockstream = m_UserVec[idx].GetInputStream();
+				sockstream.Write((byte*)buf, recvlen);
+				m_UserVec[idx].ProcessInput();
 			}
 		}
 	}
@@ -119,4 +122,39 @@ void MyThread::Tick_ProcessOutput()
 			}
 		}
 	}
+}
+
+MyThreadPool::MyThreadPool()
+{
+
+}
+
+bool MyThreadPool::PopUser(ClientUser* pClientUser)
+{
+	LOCK;
+	if (pClientUser == nullptr)
+	{
+		return false;
+	}
+	if (m_GlobalUserQueue.size() <= 0)
+	{
+		return false;
+	}
+	ClientUser& rUser = m_GlobalUserQueue.front();
+	m_GlobalUserQueue.pop();
+
+	pClientUser->m_socket = rUser.m_socket;
+	pClientUser->m_UserId = rUser.m_UserId;
+
+	cout << "get client user" << endl;
+	return true;
+}
+
+bool MyThreadPool::PushUser(const ClientUser& rUser)
+{
+	LOCK;
+	m_GlobalUserQueue.push(rUser);
+
+	cout << "add client user." << endl;
+	return true;
 }

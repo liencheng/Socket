@@ -5,11 +5,15 @@
 #include <queue>
 #include "ClientUser.h"
 #include <iostream>
+
 //#include "windows.h"
 
 using namespace std;
 
 class MyThreadPool;
+
+
+
 
 class MyThread
 {
@@ -68,10 +72,9 @@ private:
 
 class MyThreadPool
 {
-#define LOCK std::lock_guard<std::mutex> lock(m_mutex);
 
 public:
-	MyThreadPool(){};
+	MyThreadPool();;
 	MyThreadPool(int nThreadCnt)
 		:m_nThreadCount(nThreadCnt)
 	{
@@ -96,37 +99,9 @@ public:
 		}
 	}
 
-	bool PushUser(const ClientUser& rUser)
-	{
-		LOCK;
-		m_GlobalUserQueue.push(rUser);
-
-		cout << "add client user." << endl;
-		return true;
-	}
-	bool PopUser(ClientUser * pClientUser)
-	{
-		LOCK;
-		if (pClientUser == nullptr)
-		{
-			return false;
-		}
-		if (m_GlobalUserQueue.size() <= 0)
-		{
-			return false;
-		}
-		ClientUser& rUser = m_GlobalUserQueue.front();
-		m_GlobalUserQueue.pop();
-
-		pClientUser->m_socket = rUser.m_socket;
-		pClientUser->m_UserId = rUser.m_UserId;
-
-		cout << "get client user" << endl;
-		return true;
-	}
-
+	bool PushUser(const ClientUser& rUser);
+	bool PopUser(ClientUser* pClientUser);
 private:
-	std::mutex m_mutex;
 	std::queue<ClientUser> m_GlobalUserQueue;
 	int m_nThreadCount = 0;
 	std::vector<MyThread> m_ThreadPool;

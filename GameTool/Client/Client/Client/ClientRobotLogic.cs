@@ -14,6 +14,7 @@ namespace Network
         DontSend =0,
         Sawadika = 1,
         Kouyimadai = 2,
+        SendNum = 3,
     }
     public class ClientRobotLogic
     {
@@ -83,8 +84,57 @@ namespace Network
         {
 
             string sendMsg = packet;
+            
             byte[] byteArray = System.Text.Encoding.Default.GetBytes ( sendMsg );
             m_msOutput.Write(byteArray, 0, byteArray.Length);
+            long nByteNeedToSend = m_msOutput.Length;
+            // 取出要发送的数据
+            if(nByteNeedToSend == 0)
+            {
+                return;
+            }
+            byte[] sendBytes = m_msOutput.GetBuffer();
+
+            int sendByteOffset = 0;
+            int leftBytes = (int)nByteNeedToSend;
+            while(leftBytes > 0)
+            {
+                int retSend = m_socket.Send(sendBytes, sendByteOffset, leftBytes);
+                if(retSend < 0)
+                {
+                    ConnectLost();
+                    return;
+                }
+                else if(retSend == 0)
+                {
+                    ConnectLost();
+                    return;
+                }
+                else
+                {
+                    OnSendBytes(retSend);
+
+                    leftBytes -= retSend;
+                    sendByteOffset += retSend;
+                }
+            }
+            // 清空输出流
+            m_msOutput.Position = 0;
+            m_msOutput.SetLength(0);
+        }
+
+        private void ProcessOutput(int nPacket)
+        {
+
+            int sendMsg = nPacket;
+
+            byte[] nPackType = BitConverter.GetBytes(nPacket);
+            m_msOutput.Write(nPackType, 0, nPackType.Length);
+
+            byte[] nPackSize = BitConverter.GetBytes(20);
+
+            m_msOutput.Write(nPackSize, 0, nPackSize.Length);
+
             long nByteNeedToSend = m_msOutput.Length;
             // 取出要发送的数据
             if(nByteNeedToSend == 0)
@@ -209,6 +259,9 @@ namespace Network
                         break;
                     case SendPacketEnum.Sawadika:
                         ProcessOutput("sa wa di ka.." + (nSeqNum++));
+                        break;
+                    case SendPacketEnum.SendNum:
+                        ProcessOutput(1000);
                         break;
                     default:
                         break;

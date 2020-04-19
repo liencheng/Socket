@@ -3,12 +3,14 @@
 #include <thread>
 #include "ThreadPool.h"
 #include <iostream>
+#include <map>
 
 using namespace std;
 
 
 int _tmain(int argc, _TCHAR* argv[])
 {
+	
 	cout << "main thread pid:" << GetCurrentThreadId() << endl;
 	int nTickCt = 0;
 	ToolManager toolMgr;
@@ -18,6 +20,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << "main tread start" << endl;
 	while (true)
 	{
+		Sleep(10);
 		toolMgr.Tick();
 	};
 
