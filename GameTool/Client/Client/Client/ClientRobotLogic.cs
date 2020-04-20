@@ -6,6 +6,7 @@ using System.Security;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using Protobuf;
 
 namespace Network
 {
@@ -15,6 +16,7 @@ namespace Network
         Sawadika = 1,
         Kouyimadai = 2,
         SendNum = 3,
+        SendPb_Ping = 4,
     }
     public class ClientRobotLogic
     {
@@ -78,6 +80,59 @@ namespace Network
         //总发送/接收量
         private ulong m_nTotalSendDataLenth = 0;
         private ulong m_nTotalRecvDataLenth = 0;
+
+
+        private void ProcessOutput(CS_PING pingMsg)
+        {
+
+            System.Console.WriteLine(pingMsg.ansi_time);
+            int nType = 1;
+            byte[] typeArr = BitConverter.GetBytes(nType);
+            m_msOutput.Write(typeArr, 0, typeArr.Length);
+
+
+            byte[] byteArray = CS_PING.SerializeToBytes(pingMsg);
+            int nLen = byteArray.Length;
+            byte[] lenArr = BitConverter.GetBytes(nLen);
+            m_msOutput.Write(lenArr, 0, lenArr.Length);
+
+            
+            m_msOutput.Write(byteArray, 0, byteArray.Length);
+            long nByteNeedToSend = m_msOutput.Length;
+            // 取出要发送的数据
+            if(nByteNeedToSend == 0)
+            {
+                return;
+            }
+            byte[] sendBytes = m_msOutput.GetBuffer();
+
+            int sendByteOffset = 0;
+            int leftBytes = (int)nByteNeedToSend;
+            while(leftBytes > 0)
+            {
+                int retSend = m_socket.Send(sendBytes, sendByteOffset, leftBytes);
+                if(retSend < 0)
+                {
+                    ConnectLost();
+                    return;
+                }
+                else if(retSend == 0)
+                {
+                    ConnectLost();
+                    return;
+                }
+                else
+                {
+                    OnSendBytes(retSend);
+
+                    leftBytes -= retSend;
+                    sendByteOffset += retSend;
+                }
+            }
+            // 清空输出流
+            m_msOutput.Position = 0;
+            m_msOutput.SetLength(0);
+        }
 
         // 输出流处理
         private void ProcessOutput(string packet)
@@ -262,6 +317,13 @@ namespace Network
                         break;
                     case SendPacketEnum.SendNum:
                         ProcessOutput(1000);
+                        break;
+                    case SendPacketEnum.SendPb_Ping:
+                        CS_PING pingPb = new CS_PING();
+                        pingPb.ansi_time = DateTime.Now.Second;
+                        pingPb.id = 100;
+                        pingPb.name = "test";
+                        ProcessOutput(pingPb);
                         break;
                     default:
                         break;

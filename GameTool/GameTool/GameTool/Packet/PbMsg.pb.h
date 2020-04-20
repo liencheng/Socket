@@ -98,16 +98,41 @@ class CS_PING : public ::google::protobuf::Message {
   inline ::google::protobuf::int32 ansi_time() const;
   inline void set_ansi_time(::google::protobuf::int32 value);
 
+  // required int32 id = 2;
+  inline bool has_id() const;
+  inline void clear_id();
+  static const int kIdFieldNumber = 2;
+  inline ::google::protobuf::int32 id() const;
+  inline void set_id(::google::protobuf::int32 value);
+
+  // required string name = 3;
+  inline bool has_name() const;
+  inline void clear_name();
+  static const int kNameFieldNumber = 3;
+  inline const ::std::string& name() const;
+  inline void set_name(const ::std::string& value);
+  inline void set_name(const char* value);
+  inline void set_name(const char* value, size_t size);
+  inline ::std::string* mutable_name();
+  inline ::std::string* release_name();
+  inline void set_allocated_name(::std::string* name);
+
   // @@protoc_insertion_point(class_scope:Protobuf.CS_PING)
  private:
   inline void set_has_ansi_time();
   inline void clear_has_ansi_time();
+  inline void set_has_id();
+  inline void clear_has_id();
+  inline void set_has_name();
+  inline void clear_has_name();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::uint32 _has_bits_[1];
   mutable int _cached_size_;
   ::google::protobuf::int32 ansi_time_;
+  ::google::protobuf::int32 id_;
+  ::std::string* name_;
   friend void  protobuf_AddDesc_PbMsg_2eproto();
   friend void protobuf_AssignDesc_PbMsg_2eproto();
   friend void protobuf_ShutdownFile_PbMsg_2eproto();
@@ -223,6 +248,106 @@ inline void CS_PING::set_ansi_time(::google::protobuf::int32 value) {
   set_has_ansi_time();
   ansi_time_ = value;
   // @@protoc_insertion_point(field_set:Protobuf.CS_PING.ansi_time)
+}
+
+// required int32 id = 2;
+inline bool CS_PING::has_id() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void CS_PING::set_has_id() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void CS_PING::clear_has_id() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void CS_PING::clear_id() {
+  id_ = 0;
+  clear_has_id();
+}
+inline ::google::protobuf::int32 CS_PING::id() const {
+  // @@protoc_insertion_point(field_get:Protobuf.CS_PING.id)
+  return id_;
+}
+inline void CS_PING::set_id(::google::protobuf::int32 value) {
+  set_has_id();
+  id_ = value;
+  // @@protoc_insertion_point(field_set:Protobuf.CS_PING.id)
+}
+
+// required string name = 3;
+inline bool CS_PING::has_name() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void CS_PING::set_has_name() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void CS_PING::clear_has_name() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void CS_PING::clear_name() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_->clear();
+  }
+  clear_has_name();
+}
+inline const ::std::string& CS_PING::name() const {
+  // @@protoc_insertion_point(field_get:Protobuf.CS_PING.name)
+  return *name_;
+}
+inline void CS_PING::set_name(const ::std::string& value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set:Protobuf.CS_PING.name)
+}
+inline void CS_PING::set_name(const char* value) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(value);
+  // @@protoc_insertion_point(field_set_char:Protobuf.CS_PING.name)
+}
+inline void CS_PING::set_name(const char* value, size_t size) {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  name_->assign(reinterpret_cast<const char*>(value), size);
+  // @@protoc_insertion_point(field_set_pointer:Protobuf.CS_PING.name)
+}
+inline ::std::string* CS_PING::mutable_name() {
+  set_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    name_ = new ::std::string;
+  }
+  // @@protoc_insertion_point(field_mutable:Protobuf.CS_PING.name)
+  return name_;
+}
+inline ::std::string* CS_PING::release_name() {
+  clear_has_name();
+  if (name_ == &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    return NULL;
+  } else {
+    ::std::string* temp = name_;
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+    return temp;
+  }
+}
+inline void CS_PING::set_allocated_name(::std::string* name) {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
+  if (name) {
+    set_has_name();
+    name_ = name;
+  } else {
+    clear_has_name();
+    name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  }
+  // @@protoc_insertion_point(field_set_allocated:Protobuf.CS_PING.name)
 }
 
 // -------------------------------------------------------------------

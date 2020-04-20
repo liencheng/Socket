@@ -1,7 +1,7 @@
 #pragma once
 
 #define  PACK_HEAD_LENGTH (sizeof(int) + sizeof(int))
-
+#define  SEND_BUF_MAX (2048)
 
 enum PACKET_TYPE
 {
@@ -22,3 +22,4 @@ public:
 		SIZE_8192 = 8192,
 	};
 };
+

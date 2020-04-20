@@ -22,7 +22,16 @@
       <UniqueIdentifier>{3e74d6b4-6710-48f4-8259-b82c5c991823}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Packet\Handler">
-      <UniqueIdentifier>{a6598bc2-e1a9-4735-b72a-345d94f12a3a}</UniqueIdentifier>
+      <UniqueIdentifier>{d7bea84d-2c7b-4c8c-b50f-61d8463d461d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utils">
+      <UniqueIdentifier>{d8d29cb0-9da5-4738-a36e-f60df3606ca9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Public">
+      <UniqueIdentifier>{da7e223a-5d07-408a-b976-cddfa13c95a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Public\SocketStream">
+      <UniqueIdentifier>{e9f435b8-3e44-4a2b-a3da-124271e58651}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -56,8 +65,17 @@
     <ClInclude Include="Packet\Handler\PacketBase.h">
       <Filter>Source\Packet\Handler</Filter>
     </ClInclude>
-    <ClInclude Include="Packet\Handler\pk_cs_ping.h">
+    <ClInclude Include="Packet\Handler\cs_ping_packet.h">
       <Filter>Source\Packet\Handler</Filter>
+    </ClInclude>
+    <ClInclude Include="Packet\PKHandlerMgr.h">
+      <Filter>Source\Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\MyLog.h">
+      <Filter>Source\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Public\SocketStream\SocketStream.h">
+      <Filter>Source\Public\SocketStream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -81,6 +99,15 @@
     </ClCompile>
     <ClCompile Include="Packet\PbMsg.pb.cc">
       <Filter>Source\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PKHandlerMgr.cpp">
+      <Filter>Source\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\MyLog.cpp">
+      <Filter>Source\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Public\SocketStream\SocketStream.cpp">
+      <Filter>Source\Public\SocketStream</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

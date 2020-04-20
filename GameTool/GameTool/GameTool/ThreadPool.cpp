@@ -107,19 +107,7 @@ void MyThread::Tick_ProcessOutput()
 		SOCKET sock = m_UserVec[idx].m_socket.m_socket;
 		if (FD_ISSET(sock, &m_fs_write))
 		{
-			char buf[1024] = "ku wa yi madai";
-			int nRet = send(sock, buf, sizeof(buf), 0);
-			if (nRet == 0)
-			{
-				cout << "socket closed, sock:" << sock << endl;
-			}
-			else if (nRet == SOCKET_ERROR)
-			{
-				cout << "send error, sock:" << sock << endl;
-			}
-			else{
-				cout << "send, sock:" << sock << endl;
-			}
+			m_UserVec[idx].ProcessOutput();
 		}
 	}
 }
