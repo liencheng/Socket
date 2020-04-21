@@ -49,6 +49,13 @@ namespace Client
                 Console.WriteLine("SendNum Logic.");
             }
 
+            if(args[0] == "4")
+            {
+                sp = SendPacketEnum.SendPb_Ping;
+                Console.WriteLine("SendNum Logic.");
+            }
+
+
 
             for(int idx = 0; idx < nlCt; ++idx)
             {

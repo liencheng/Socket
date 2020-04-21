@@ -37,8 +37,10 @@ void protobuf_AssignDesc_PbMsg_2eproto() {
       "PbMsg.proto");
   GOOGLE_CHECK(file != NULL);
   CS_PING_descriptor_ = file->message_type(0);
-  static const int CS_PING_offsets_[1] = {
+  static const int CS_PING_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CS_PING, ansi_time_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CS_PING, id_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(CS_PING, name_),
   };
   CS_PING_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -100,9 +102,9 @@ void protobuf_AddDesc_PbMsg_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\013PbMsg.proto\022\010Protobuf\"\034\n\007CS_PING\022\021\n\tan"
-    "si_time\030\001 \002(\005\"\034\n\007SC_PONG\022\021\n\tansi_time\030\001 "
-    "\002(\005", 83);
+    "\n\013PbMsg.proto\022\010Protobuf\"6\n\007CS_PING\022\021\n\tan"
+    "si_time\030\001 \002(\005\022\n\n\002id\030\002 \002(\005\022\014\n\004name\030\003 \002(\t\""
+    "\034\n\007SC_PONG\022\021\n\tansi_time\030\001 \002(\005", 109);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "PbMsg.proto", &protobuf_RegisterTypes);
   CS_PING::default_instance_ = new CS_PING();
@@ -123,6 +125,8 @@ struct StaticDescriptorInitializer_PbMsg_2eproto {
 
 #ifndef _MSC_VER
 const int CS_PING::kAnsiTimeFieldNumber;
+const int CS_PING::kIdFieldNumber;
+const int CS_PING::kNameFieldNumber;
 #endif  // !_MSC_VER
 
 CS_PING::CS_PING()
@@ -142,8 +146,11 @@ CS_PING::CS_PING(const CS_PING& from)
 }
 
 void CS_PING::SharedCtor() {
+  ::google::protobuf::internal::GetEmptyString();
   _cached_size_ = 0;
   ansi_time_ = 0;
+  id_ = 0;
+  name_ = const_cast< ::std::string*>(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -153,6 +160,9 @@ CS_PING::~CS_PING() {
 }
 
 void CS_PING::SharedDtor() {
+  if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+    delete name_;
+  }
   if (this != default_instance_) {
   }
 }
@@ -179,7 +189,28 @@ CS_PING* CS_PING::New() const {
 }
 
 void CS_PING::Clear() {
-  ansi_time_ = 0;
+#define OFFSET_OF_FIELD_(f) (reinterpret_cast<char*>(      \
+  &reinterpret_cast<CS_PING*>(16)->f) - \
+   reinterpret_cast<char*>(16))
+
+#define ZR_(first, last) do {                              \
+    size_t f = OFFSET_OF_FIELD_(first);                    \
+    size_t n = OFFSET_OF_FIELD_(last) - f + sizeof(last);  \
+    ::memset(&first, 0, n);                                \
+  } while (0)
+
+  if (_has_bits_[0 / 32] & 7) {
+    ZR_(ansi_time_, id_);
+    if (has_name()) {
+      if (name_ != &::google::protobuf::internal::GetEmptyStringAlreadyInited()) {
+        name_->clear();
+      }
+    }
+  }
+
+#undef OFFSET_OF_FIELD_
+#undef ZR_
+
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -201,6 +232,38 @@ bool CS_PING::MergePartialFromCodedStream(
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &ansi_time_)));
           set_has_ansi_time();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(16)) goto parse_id;
+        break;
+      }
+
+      // required int32 id = 2;
+      case 2: {
+        if (tag == 16) {
+         parse_id:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &id_)));
+          set_has_id();
+        } else {
+          goto handle_unusual;
+        }
+        if (input->ExpectTag(26)) goto parse_name;
+        break;
+      }
+
+      // required string name = 3;
+      case 3: {
+        if (tag == 26) {
+         parse_name:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_name()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->name().data(), this->name().length(),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "name");
         } else {
           goto handle_unusual;
         }
@@ -238,6 +301,21 @@ void CS_PING::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->ansi_time(), output);
   }
 
+  // required int32 id = 2;
+  if (has_id()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(2, this->id(), output);
+  }
+
+  // required string name = 3;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "name");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      3, this->name(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -251,6 +329,22 @@ void CS_PING::SerializeWithCachedSizes(
   // required int32 ansi_time = 1;
   if (has_ansi_time()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->ansi_time(), target);
+  }
+
+  // required int32 id = 2;
+  if (has_id()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(2, this->id(), target);
+  }
+
+  // required string name = 3;
+  if (has_name()) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->name().data(), this->name().length(),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "name");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        3, this->name(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -270,6 +364,20 @@ int CS_PING::ByteSize() const {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::Int32Size(
           this->ansi_time());
+    }
+
+    // required int32 id = 2;
+    if (has_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->id());
+    }
+
+    // required string name = 3;
+    if (has_name()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->name());
     }
 
   }
@@ -302,6 +410,12 @@ void CS_PING::MergeFrom(const CS_PING& from) {
     if (from.has_ansi_time()) {
       set_ansi_time(from.ansi_time());
     }
+    if (from.has_id()) {
+      set_id(from.id());
+    }
+    if (from.has_name()) {
+      set_name(from.name());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -319,7 +433,7 @@ void CS_PING::CopyFrom(const CS_PING& from) {
 }
 
 bool CS_PING::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
 
   return true;
 }
@@ -327,6 +441,8 @@ bool CS_PING::IsInitialized() const {
 void CS_PING::Swap(CS_PING* other) {
   if (other != this) {
     std::swap(ansi_time_, other->ansi_time_);
+    std::swap(id_, other->id_);
+    std::swap(name_, other->name_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

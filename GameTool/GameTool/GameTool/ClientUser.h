@@ -5,25 +5,10 @@
 #include <queue>
 #include "GameDefine/GameDefine_Packet.h"
 #include "Packet/PbMsg.pb.h"
+#include "Public/SocketStream/SocketStream.h"
+#include <iostream>
+#include "Packet/PKHandlerMgr.h"
 
-class InputStream
-{
-public:
-	InputStream(){ Clean(); };
-
-	void Clean()
-	{
-		while (m_Data.size()>0)
-		{
-			m_Data.pop();
-		}
-	}
-	void Write(byte * pByte, int len);
-	bool ReadPacket(byte *pBuf, int len);
-	bool ReadHeader(int &nPackType, int &nPackSize);
-private:
-	std::queue<byte> m_Data;
-};
 
 class ClientUser
 {
@@ -40,19 +25,29 @@ public:
 	{
 		m_CurPackType = PACKET_TYPE::INVALID;
 		m_SockData.Clean();
+		m_SendBuf.Clean();
 	}
 
 	InputStream &GetInputStream(){ return m_SockData; }
 
-	void  ProcessInput();
+	void ProcessInput();
+	void ProcessOutput();
 
 public:
 	void RcvPacket(const Protobuf::CS_PING& rPacket) 
 	{
-		std::cout << "rcv packet::ping" << std::endl;
+		MyLog::Log("rev packet::pint, time = %d, id = %d, name = %s"
+			, rPacket.ansi_time()
+			, rPacket.id()
+			, rPacket.name().c_str());
+
+		Protobuf::SC_PONG pak;
+		pak.set_ansi_time(100);
+		PKHandlerMgr::PushPak(pak, PACKET_TYPE::SC_PONG, *this);
 	};
-
-
+	
+	void PushPak(char *bBuf, int size, PACKET_TYPE type);
+		
 public:
 	int m_UserId;
 	MySocket m_socket;
@@ -60,5 +55,5 @@ private:
 	int		m_CurPackSize = 0;
 	PACKET_TYPE m_CurPackType = PACKET_TYPE::INVALID;
 	InputStream m_SockData;
-		
+	OutputStream m_SendBuf;
 };

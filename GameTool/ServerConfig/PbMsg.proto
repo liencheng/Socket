@@ -3,6 +3,8 @@ package Protobuf;
 message CS_PING
 {
 	required int32 ansi_time = 1;
+	required int32 id = 2;
+	required string name = 3;
 }
 
 message SC_PONG

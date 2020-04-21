@@ -2,53 +2,9 @@
 #include "ClientUser.h"
 #include "GameDefine/GameDefine_Packet.h"
 #include "Packet/Handler/PacketBase.h"
+#include "Packet/PKHandlerMgr.h"
 
 using namespace std;
-void InputStream::Write(byte *pByte, int len)
-{
-	for (int idx = 0; idx < len; ++idx)
-	{
-		m_Data.push(pByte[idx]);
-	}
-	cout << "add data.len:" << len << endl;
-    
-}
-
-bool InputStream::ReadPacket(byte *pBuf, int len)
-{
-    
-	if (m_Data.size() < len)
-	{
-		return false;
-	}
-	
-	for (int idx = 0; idx < len; ++idx)
-	{
-		pBuf[idx] = m_Data.front();
-		m_Data.pop();
-	}
-	return true;;
-}
-
-bool InputStream::ReadHeader(int &nPackType, int &nPackSize)
-{
-	nPackType = -1;
-	nPackSize = -1;
-	if (m_Data.size() < PACK_HEAD_LENGTH)
-	{
-		return false;
-	}
-	byte headBuf[PACK_HEAD_LENGTH];
-
-	if (ReadPacket(headBuf, PACK_HEAD_LENGTH))
-	{
-		memcpy(&nPackType, headBuf, PACK_HEAD_LENGTH / 2);
-		memcpy(&nPackSize, &(headBuf[PACK_HEAD_LENGTH / 2]), PACK_HEAD_LENGTH / 2);
-		return true;
-	}
-	return false;
-}
-
 
 void ClientUser::ProcessInput()
 {
@@ -61,6 +17,8 @@ void ClientUser::ProcessInput()
 		{
 			std::cout << nType << endl;
 			std::cout << nSize << endl;
+			m_CurPackType = PACKET_TYPE(nType);
+			m_CurPackSize = nSize;
 		}
 		return;
 	}
@@ -71,34 +29,112 @@ void ClientUser::ProcessInput()
 		
 		if (m_CurPackSize >= PACK_SIZE::SIZE_4096)
 		{
-			byte buf[PACK_SIZE::SIZE_8192];
+			char buf[PACK_SIZE::SIZE_8192];
 			bool bRet = m_SockData.ReadPacket(buf, m_CurPackSize);
 			if (bRet)
 			{
-				 	
+				PKHandlerMgr::ExecutePK(buf, m_CurPackSize, m_CurPackType, *this);
+				m_CurPackSize = 0;
+				m_CurPackType = PACKET_TYPE::INVALID;
 			}
 		}
 		else if (m_CurPackSize >= PACK_SIZE::SIZE_2048)
 		{
-			byte buf[PACK_SIZE::SIZE_4096];
+			char buf[PACK_SIZE::SIZE_4096];
 			bool bRet = m_SockData.ReadPacket(buf, m_CurPackSize);
+			if (bRet)
+			{
+				PKHandlerMgr::ExecutePK(buf, m_CurPackSize, m_CurPackType, *this);
+				m_CurPackSize = 0;
+				m_CurPackType = PACKET_TYPE::INVALID;
+			}
 		}
 		else if (m_CurPackSize > PACK_SIZE::SIZE_1024)
 		{
-			byte buf[PACK_SIZE::SIZE_2048];
+			char buf[PACK_SIZE::SIZE_2048];
 			bool bRet = m_SockData.ReadPacket(buf, m_CurPackSize);
+			if (bRet)
+			{
+				PKHandlerMgr::ExecutePK(buf, m_CurPackSize, m_CurPackType, *this);
+				m_CurPackSize = 0;
+				m_CurPackType = PACKET_TYPE::INVALID;
+			}
 		}
 		else if (m_CurPackSize > PACK_SIZE::SIZE_512)
 		{
-			byte buf[PACK_SIZE::SIZE_1024];
+			char buf[PACK_SIZE::SIZE_1024];
 			bool bRet = m_SockData.ReadPacket(buf, m_CurPackSize);
+			if (bRet)
+			{
+				PKHandlerMgr::ExecutePK(buf, m_CurPackSize, m_CurPackType, *this);
+				m_CurPackSize = 0;
+				m_CurPackType = PACKET_TYPE::INVALID;
+			}
 		}
 		else
 		{
-			byte buf[PACK_SIZE::SIZE_512];
+			char buf[PACK_SIZE::SIZE_512];
+			memset(buf, 0, PACK_SIZE::SIZE_512);
 			bool bRet = m_SockData.ReadPacket(buf, m_CurPackSize);
+			if (bRet)
+			{
+				PKHandlerMgr::ExecutePK(buf, m_CurPackSize, m_CurPackType, *this);
+				m_CurPackSize = 0;
+				m_CurPackType = PACKET_TYPE::INVALID;
+			}
 		}
 		
 	}
 
+}
+void ClientUser::ProcessOutput()
+{
+	if (!m_SendBuf.WaitSend())
+	{
+		return;
+	}
+
+	m_SendBuf.Flush();
+
+	if (m_SendBuf.GetSendBuf() == nullptr)
+	{
+		return;
+	}
+	SOCKET sock = m_socket.m_socket;
+	int nSendSize = send(sock, m_SendBuf.GetSendBuf(), m_SendBuf.GetSendSize(), 0);
+	if (nSendSize == 0)
+	{
+		MyLog::Log("socket closed, sock:%d",sock);
+	}
+	else if (nSendSize == SOCKET_ERROR)
+	{
+		MyLog::Log("socket closed, sock:%d",sock);
+	}
+	else
+	{
+		m_SendBuf.SetPosition(m_SendBuf.GetPosition() + nSendSize);
+		MyLog::Log("send data:, sock:%d",sock);
+	}
+}
+
+void ClientUser::PushPak(char *bBuf, int size, PACKET_TYPE type)
+{
+	if (size <= 0)
+	{
+		return;
+	}
+#define INT_SIZE (4)
+	//类型
+	int nType = (int)type;
+	char nTypeByte[INT_SIZE];
+	memset(nTypeByte, 0, INT_SIZE);
+	memcpy(nTypeByte, &nType, INT_SIZE);
+	m_SendBuf.Write(nTypeByte, INT_SIZE);
+	//大小
+	char nSizeByte[INT_SIZE];
+	memset(nSizeByte, 0, INT_SIZE);
+	memcpy(nTypeByte, &size, INT_SIZE);
+	m_SendBuf.Write(nTypeByte, INT_SIZE);
+	//数据
+	m_SendBuf.Write(bBuf, size);
 }

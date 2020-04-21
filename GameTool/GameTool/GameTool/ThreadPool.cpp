@@ -77,7 +77,7 @@ void MyThread::Tick_ProcessInput()
 		SOCKET sock = m_UserVec[idx].m_socket.m_socket;
 		if (FD_ISSET(sock, &m_fs_read))
 		{
-			byte buf[2048];
+			char buf[2048];
 			memset(buf, 0, sizeof(buf));
 			int nRcvData1 = 0;
 			int recvlen =  recv(sock, (char*)(buf), sizeof(buf), 0);
@@ -93,7 +93,7 @@ void MyThread::Tick_ProcessInput()
 			else
 			{
 				InputStream &sockstream = m_UserVec[idx].GetInputStream();
-				sockstream.Write((byte*)buf, recvlen);
+				sockstream.Write((char*)buf, recvlen);
 				m_UserVec[idx].ProcessInput();
 			}
 		}
@@ -107,19 +107,7 @@ void MyThread::Tick_ProcessOutput()
 		SOCKET sock = m_UserVec[idx].m_socket.m_socket;
 		if (FD_ISSET(sock, &m_fs_write))
 		{
-			char buf[1024] = "ku wa yi madai";
-			int nRet = send(sock, buf, sizeof(buf), 0);
-			if (nRet == 0)
-			{
-				cout << "socket closed, sock:" << sock << endl;
-			}
-			else if (nRet == SOCKET_ERROR)
-			{
-				cout << "send error, sock:" << sock << endl;
-			}
-			else{
-				cout << "send, sock:" << sock << endl;
-			}
+			m_UserVec[idx].ProcessOutput();
 		}
 	}
 }

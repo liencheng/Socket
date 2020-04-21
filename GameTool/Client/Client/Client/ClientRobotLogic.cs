@@ -6,6 +6,7 @@ using System.Security;
 using System.IO;
 using System.Threading;
 using System.Collections.Generic;
+using Protobuf;
 
 namespace Network
 {
@@ -15,23 +16,11 @@ namespace Network
         Sawadika = 1,
         Kouyimadai = 2,
         SendNum = 3,
+        SendPb_Ping = 4,
     }
     public class ClientRobotLogic
     {
 
-        public ClientRobotLogic(SendPacketEnum sendLogic) { SendLogic = sendLogic; }
-        public  SendPacketEnum SendLogic = SendPacketEnum.DontSend;
-        private MySocket m_socket = new MySocket();
-        private MemoryStream m_msInput = new MemoryStream();        
-        private MemoryStream m_msOutput = new MemoryStream();       
-        private MemoryStream m_msPacketCache = new MemoryStream();
-        private bool m_bCanReceivePacket = true;
-        private int m_protobufPacketCacheLen = 1024; 
-
-        private UInt32 m_ClientSeq = 0;
-        private bool m_CanSendPacket = false;
-        public byte[] Session = new byte[] { };
-        private byte[] remainByte = new byte[1024]; 
         // 状态相关
         public enum ConnectState
         {
@@ -39,20 +28,25 @@ namespace Network
             CONNECTING,        
             CONNECTED,          
         }
-
+        public  SendPacketEnum SendLogic = SendPacketEnum.DontSend;
+        private MySocket m_socket = new MySocket();
+        private MemoryStream m_InputStream = new MemoryStream();        
+        private MemoryStream m_OutputStream = new MemoryStream();
+        private byte[] remainByte = new byte[1024]; 
+        private int nSeqNum = 0;
         public delegate void ConnectChangeDelegate(ConnectState newState);
-        public ConnectState State { get { return m_connectState; } }
         private ConnectState m_connectState = ConnectState.DISCONNECT;
         private ConnectChangeDelegate m_delConnectChange;
-
         private bool m_bGetConnectResult = false;
         private bool m_bConnectSuccess = false;
+        private bool m_bPing = false;
+        PbMsgManager m_PakManager = new PbMsgManager();
 
-        public void SetCanSendPacket(bool value)
+        public ClientRobotLogic(SendPacketEnum sendLogic)
         {
-            m_CanSendPacket = value;
+            SendLogic = sendLogic;
+            m_bPing = false;
         }
-
         private void ChangeConnectState(ConnectState newState)
         {
             ConnectState lastState = m_connectState;
@@ -62,122 +56,172 @@ namespace Network
                 m_delConnectChange(newState);
             }
         }
-
-        //输出通信消息开关_方便定位消息包
-        private bool m_bLOgPacketInfoLogOpen = false;
         private void OnSendBytes(int nBytes)
         {
             m_nSendDataLenth += nBytes;
             m_nTotalSendDataLenth += (ulong)(nBytes);
         }
 
-        //每秒发送/接收量
         private int m_nSendDataLenth = 0;
-        private int m_nRecvDataLenth = 0;
 
-        //总发送/接收量
         private ulong m_nTotalSendDataLenth = 0;
-        private ulong m_nTotalRecvDataLenth = 0;
 
-        // 输出流处理
-        private void ProcessOutput(string packet)
+
+        public void Send(byte [] data, int size, SOCKET_TYPE type)
         {
+            //写入类型
+            int nType = (int)type;
+            byte[] typebyte = BitConverter.GetBytes(nType);
+            m_OutputStream.Write(typebyte, 0, typebyte.Length);
+            //写入大小
+            byte[] sizebyte = BitConverter.GetBytes(size);
+            m_OutputStream.Write(sizebyte, 0, sizebyte.Length);
+            //写入消息体
+            m_OutputStream.Write(data, 0, size);
+        }
+        public void ProcessOutput()
+        {
+            long nByteNeedToSend = m_OutputStream.Length;
+            // 取出要发送的数据
+            if(nByteNeedToSend == 0)
+            {
+                return;
+            }
+            byte[] sendBytes = m_OutputStream.GetBuffer();
 
-            string sendMsg = packet;
+            int sendByteOffset = 0;
+            int leftBytes = (int)nByteNeedToSend;
+            while(leftBytes > 0)
+            {
+                int retSend = m_socket.Send(sendBytes, sendByteOffset, leftBytes);
+                if(retSend < 0)
+                {
+                    ConnectLost();
+                    return;
+                }
+                else if(retSend == 0)
+                {
+                    ConnectLost();
+                    return;
+                }
+                else
+                {
+                    OnSendBytes(retSend);
+
+                    leftBytes -= retSend;
+                    sendByteOffset += retSend;
+                }
+            }
+            // 清空输出流
+            m_OutputStream.Position = 0;
+            m_OutputStream.SetLength(0);
+        }
+
+        private void ProcessInput()
+        {
+            if (!m_socket.PollRead())
+            {
+                return;
+            }
+
             
-            byte[] byteArray = System.Text.Encoding.Default.GetBytes ( sendMsg );
-            m_msOutput.Write(byteArray, 0, byteArray.Length);
-            long nByteNeedToSend = m_msOutput.Length;
-            // 取出要发送的数据
-            if(nByteNeedToSend == 0)
+            byte [] m_ByteRcvCache = new byte [1024];
+            int nRecvCnt = 0;
+            nRecvCnt = m_socket.Recv(m_ByteRcvCache, 1024);
+            if ( nRecvCnt < 0)
             {
+                ConnectLost();
                 return;
             }
-            byte[] sendBytes = m_msOutput.GetBuffer();
-
-            int sendByteOffset = 0;
-            int leftBytes = (int)nByteNeedToSend;
-            while(leftBytes > 0)
+            else if (nRecvCnt == 0)
             {
-                int retSend = m_socket.Send(sendBytes, sendByteOffset, leftBytes);
-                if(retSend < 0)
-                {
-                    ConnectLost();
-                    return;
-                }
-                else if(retSend == 0)
-                {
-                    ConnectLost();
-                    return;
-                }
-                else
-                {
-                    OnSendBytes(retSend);
-
-                    leftBytes -= retSend;
-                    sendByteOffset += retSend;
-                }
+                ConnectLost();
+                return;
             }
-            // 清空输出流
-            m_msOutput.Position = 0;
-            m_msOutput.SetLength(0);
+
+            if (nRecvCnt > 0)
+            {
+                m_InputStream.Write(m_ByteRcvCache, 0, (int)nRecvCnt);
+            }
         }
 
-        private void ProcessOutput(int nPacket)
+        bool ReadType(ref int type)
         {
+            m_InputStream.Position = 0;
+            byte[] typebyte = new byte[SOCKET_DEFINE.HEAD_SIZE];
+            int readsize = m_InputStream.Read(typebyte, 0, SOCKET_DEFINE.HEAD_SIZE);
+            if(readsize != SOCKET_DEFINE.HEAD_SIZE)
+            {
+                return false;
+            }
+            type = BitConverter.ToInt32(typebyte, 0);
+            return true;
+        }
+        bool ReadSize(ref int size)
+        {
+            m_InputStream.Position = 0;
+            byte[] sizebyte = new byte[SOCKET_DEFINE.SIZE_SIZE];
+            int readsize = m_InputStream.Read(sizebyte, SOCKET_DEFINE.HEAD_SIZE, SOCKET_DEFINE.SIZE_SIZE+SOCKET_DEFINE.HEAD_SIZE);
+            if(readsize != SOCKET_DEFINE.SIZE_SIZE)
+            {
+                return false;
+            }
+            size = BitConverter.ToInt32(sizebyte, 0);
+            return true;
+        }
 
-            int sendMsg = nPacket;
+        bool ReadBody(byte []buf, int size)
+        {
+            m_InputStream.Position = 0;
+            if(m_InputStream.Length<size + SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE)
+            {
+                return false;
+            }
+            m_InputStream.Read(buf, SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE, size);
+            return true; 
+        }
 
-            byte[] nPackType = BitConverter.GetBytes(nPacket);
-            m_msOutput.Write(nPackType, 0, nPackType.Length);
-
-            byte[] nPackSize = BitConverter.GetBytes(20);
-
-            m_msOutput.Write(nPackSize, 0, nPackSize.Length);
-
-            long nByteNeedToSend = m_msOutput.Length;
-            // 取出要发送的数据
-            if(nByteNeedToSend == 0)
+        private void ProcessInputPacket()
+        {
+            int _socktype = -1;
+            int _socksize = -1;
+            m_InputStream.Position = 0;
+            if(!ReadType(ref _socktype) || !ReadSize(ref _socksize))
             {
                 return;
             }
-            byte[] sendBytes = m_msOutput.GetBuffer();
-
-            int sendByteOffset = 0;
-            int leftBytes = (int)nByteNeedToSend;
-            while(leftBytes > 0)
+            byte[] buf = new byte[_socksize];
+            if(!ReadBody(buf, _socksize))
             {
-                int retSend = m_socket.Send(sendBytes, sendByteOffset, leftBytes);
-                if(retSend < 0)
+                return;
+            }
+            m_PakManager.HandlePacket(buf, _socksize, (SOCKET_TYPE)_socktype, this);
+
+            long inputPosition = _socksize + SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE;
+            long remainDataSize = m_InputStream.Length - inputPosition;
+            if(remainDataSize > 0)
+            {
+                byte[] remainData = new byte[remainDataSize];
+                int readsize = m_InputStream.Read(remainData, (int)inputPosition, (int)remainDataSize);
+                if(remainDataSize != readsize)
                 {
-                    ConnectLost();
-                    return;
-                }
-                else if(retSend == 0)
-                {
-                    ConnectLost();
-                    return;
+                    Console.WriteLine("Copy 2 TmpMemory Failed.");
                 }
                 else
                 {
-                    OnSendBytes(retSend);
-
-                    leftBytes -= retSend;
-                    sendByteOffset += retSend;
+                    m_InputStream.SetLength(0);
+                    m_InputStream.Position = 0;
+                    m_InputStream.Write(remainData, 0, (int)remainDataSize);
                 }
             }
-            // 清空输出流
-            m_msOutput.Position = 0;
-            m_msOutput.SetLength(0);
         }
 
-        // 连接服务器
-        public delegate void DelConnectResult(bool bSuccess);
+
+
         Thread m_hConnectThread = null;
         string m_strConnectIP;
         int m_nConnectPort;
-        DelConnectResult m_delConnectResult;
-        public void Connect(string strIP, int port, DelConnectResult delConnectResult)
+        public void Connect(string strIP, int port)
         {
             if(m_connectState == ConnectState.CONNECTING)
             {
@@ -185,9 +229,6 @@ namespace Network
             }
             m_strConnectIP = strIP;
             m_nConnectPort = port;
-            m_delConnectResult = delConnectResult;
-            m_ClientSeq = 0;
-            SetCanSendPacket(false);
             Close();
             ChangeConnectState(ConnectState.CONNECTING);
 
@@ -230,42 +271,63 @@ namespace Network
         private void Close()
         {
             m_socket.Close();
-            m_msInput.Position = 0;
-            m_msInput.SetLength(0);
-            m_msOutput.Position = 0;
-            m_msOutput.SetLength(0);
+            m_InputStream.Position = 0;
+            m_InputStream.SetLength(0);
+            m_OutputStream.Position = 0;
+            m_OutputStream.SetLength(0);
         }
-
-        // 心跳
-        int nSeqNum = 0;
         public void Update()
         {
             string addr_ip = "127.0.0.1";
             int addr_port = 2718;
             if(!m_bConnectSuccess)
             {
-                Connect(addr_ip, addr_port, null);
+                Connect(addr_ip, addr_port);
                 Console.WriteLine("connecting...");
             }
             else
             {
+                TestSendPak();
+                ProcessInput();
+                ProcessInputPacket();
+                ProcessOutput();
+            }
 
-                switch(SendLogic)
-                {
-                    case SendPacketEnum.DontSend:
-                        break;
-                    case SendPacketEnum.Kouyimadai:
-                        ProcessOutput("kou& yi madai." + (nSeqNum++));
-                        break;
-                    case SendPacketEnum.Sawadika:
-                        ProcessOutput("sa wa di ka.." + (nSeqNum++));
-                        break;
-                    case SendPacketEnum.SendNum:
-                        ProcessOutput(1000);
-                        break;
-                    default:
-                        break;
-                }
+            if(m_bConnectSuccess && !m_bPing)
+            {
+                DoLogin();
+            }
+        }
+
+        void DoLogin()
+        {
+            CS_PING ping = new CS_PING();
+            ping.id = 0;
+            ping.ansi_time = 100;
+            ping.name = "start ping";
+
+            byte[] data = CS_PING.SerializeToBytes(ping);
+            Send(data, data.Length, SOCKET_TYPE.CS_PING);
+
+            //m_bPing = true;
+        }
+
+        void TestSendPak()
+        {
+            switch(SendLogic)
+            {
+                case SendPacketEnum.DontSend:
+                    break;
+                case SendPacketEnum.Kouyimadai:
+                    break;
+                case SendPacketEnum.Sawadika:
+                    break;
+                case SendPacketEnum.SendNum:
+                    break;
+                case SendPacketEnum.SendPb_Ping:
+                    break;
+                default:
+                    break;
             }
         }
     }
