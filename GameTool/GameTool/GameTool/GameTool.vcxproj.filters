@@ -59,6 +59,9 @@
     <ClInclude Include="Packet\Handler\pk_cs_ping.h">
       <Filter>Source\Packet\Handler</Filter>
     </ClInclude>
+    <ClInclude Include="Packet\PKHandlerMgr.h">
+      <Filter>Source\Packet\Handler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -81,6 +84,9 @@
     </ClCompile>
     <ClCompile Include="Packet\PbMsg.pb.cc">
       <Filter>Source\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="Packet\PKHandlerMgr.cpp">
+      <Filter>Source\Packet\Handler</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
