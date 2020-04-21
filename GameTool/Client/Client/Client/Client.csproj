@@ -42,9 +42,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientRobotLogic.cs" />
+    <Compile Include="Define\SOCKET_DEFINE.cs" />
     <Compile Include="MySocket.cs" />
     <Compile Include="PbMsg\PbMsg.cs" />
     <Compile Include="PbMsg\PbMsg.Serializer.cs" />
+    <Compile Include="PbMsg\PbMsgManager.cs" />
     <Compile Include="PbMsg\ProtocolParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
