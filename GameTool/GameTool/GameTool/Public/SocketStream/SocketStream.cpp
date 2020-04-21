@@ -73,9 +73,10 @@ void OutputStream::Flush()
 {
 	if (m_Position >=m_EndPostion)
 	{
-		return;
+		m_Position = 0;
+		m_EndPostion = 0;
 	}
-	for (int idx = 0; idx < sizeof(m_WaitSendBuf); ++idx)
+	for (int idx = m_EndPostion; idx < sizeof(m_WaitSendBuf); ++idx)
 	{
 		if (m_Data.size()>0)
 		{
@@ -88,5 +89,4 @@ void OutputStream::Flush()
 			break;
 		}
 	}
-	m_Position = 0;
 }

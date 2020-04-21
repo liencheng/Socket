@@ -7,6 +7,7 @@
 #include "Packet/PbMsg.pb.h"
 #include "Public/SocketStream/SocketStream.h"
 #include <iostream>
+#include "Packet/PKHandlerMgr.h"
 
 
 class ClientUser

@@ -89,11 +89,17 @@ void ClientUser::ProcessInput()
 }
 void ClientUser::ProcessOutput()
 {
-	if (!m_SendBuf.WaitSend() || m_SendBuf.GetSendBuf() == nullptr)
+	if (!m_SendBuf.WaitSend())
 	{
 		return;
 	}
+
 	m_SendBuf.Flush();
+
+	if (m_SendBuf.GetSendBuf() == nullptr)
+	{
+		return;
+	}
 	SOCKET sock = m_socket.m_socket;
 	int nSendSize = send(sock, m_SendBuf.GetSendBuf(), m_SendBuf.GetSendSize(), 0);
 	if (nSendSize == 0)
