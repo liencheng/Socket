@@ -124,7 +124,6 @@ void ClientUser::PushPak(char *bBuf, int size, PACKET_TYPE type)
 		return;
 	}
 #define INT_SIZE (4)
-	//¿‡–Õ
 	int nType = (int)type;
 	char nTypeByte[INT_SIZE];
 	memset(nTypeByte, 0, INT_SIZE);
