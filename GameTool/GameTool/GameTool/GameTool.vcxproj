@@ -53,14 +53,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../..\Tool\protobuf\protobuf-2.6.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\002_VS\Socket\GameTool\Tool\protobuf\protobuf-2.6.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>C:\002_VS\Socket\GameTool\Tool\protobuf\libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>G:\001Work\GameTool\GameTool\Tool\protobuf\libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -87,14 +87,16 @@
     <ClInclude Include="ClientUser.h" />
     <ClInclude Include="GameDefine\GameDefine_Packet.h" />
     <ClInclude Include="MySocket.h" />
+    <ClInclude Include="Packet\Handler\cs_ping_packet.h" />
     <ClInclude Include="Packet\Handler\PacketBase.h" />
-    <ClInclude Include="Packet\Handler\pk_cs_ping.h" />
     <ClInclude Include="Packet\PbMsg.pb.h" />
     <ClInclude Include="Packet\PKHandlerMgr.h" />
+    <ClInclude Include="Public\SocketStream\SocketStream.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ToolManager.h" />
+    <ClInclude Include="Utils\MyLog.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientUser.cpp" />
@@ -102,12 +104,14 @@
     <ClCompile Include="MySocket.cpp" />
     <ClCompile Include="Packet\PbMsg.pb.cc" />
     <ClCompile Include="Packet\PKHandlerMgr.cpp" />
+    <ClCompile Include="Public\SocketStream\SocketStream.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="ToolManager.cpp" />
+    <ClCompile Include="Utils\MyLog.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
