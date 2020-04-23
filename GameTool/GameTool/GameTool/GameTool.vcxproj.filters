@@ -82,9 +82,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="GameTool.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="ToolManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -108,6 +105,9 @@
     </ClCompile>
     <ClCompile Include="Public\SocketStream\SocketStream.cpp">
       <Filter>Source\Public\SocketStream</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTool.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

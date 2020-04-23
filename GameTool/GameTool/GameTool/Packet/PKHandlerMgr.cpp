@@ -25,6 +25,7 @@ void  PKHandlerMgr::ExecutePK(char* pByte, int len, PACKET_TYPE pk_type, ClientU
 void PKHandlerMgr::PushPak(google::protobuf::Message &rMsg, PACKET_TYPE type, ClientUser &rUser)
 {
 	char *pBuf = new char[rMsg.ByteSize()];
+	rMsg.SerializeToArray(pBuf, rMsg.ByteSize());
 	rUser.PushPak(pBuf, rMsg.ByteSize(), type);
 	delete []pBuf;
 }

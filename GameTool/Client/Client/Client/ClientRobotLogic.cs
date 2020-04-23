@@ -147,6 +147,10 @@ namespace Network
 
         bool ReadType(ref int type)
         {
+            if(m_InputStream.Length < SOCKET_DEFINE.HEAD_SIZE)
+            {
+                return false;
+            }
             m_InputStream.Position = 0;
             byte[] typebyte = new byte[SOCKET_DEFINE.HEAD_SIZE];
             int readsize = m_InputStream.Read(typebyte, 0, SOCKET_DEFINE.HEAD_SIZE);
@@ -159,9 +163,13 @@ namespace Network
         }
         bool ReadSize(ref int size)
         {
-            m_InputStream.Position = 0;
+            if(m_InputStream.Length < SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE)
+            {
+                return false;
+            }
+            m_InputStream.Position = SOCKET_DEFINE.HEAD_SIZE ;
             byte[] sizebyte = new byte[SOCKET_DEFINE.SIZE_SIZE];
-            int readsize = m_InputStream.Read(sizebyte, SOCKET_DEFINE.HEAD_SIZE, SOCKET_DEFINE.SIZE_SIZE+SOCKET_DEFINE.HEAD_SIZE);
+            int readsize = m_InputStream.Read(sizebyte, 0, SOCKET_DEFINE.SIZE_SIZE);
             if(readsize != SOCKET_DEFINE.SIZE_SIZE)
             {
                 return false;
@@ -172,12 +180,12 @@ namespace Network
 
         bool ReadBody(byte []buf, int size)
         {
-            m_InputStream.Position = 0;
+            m_InputStream.Position = SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE;
             if(m_InputStream.Length<size + SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE)
             {
                 return false;
             }
-            m_InputStream.Read(buf, SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE, size);
+            m_InputStream.Read(buf, 0, size);
             return true; 
         }
 
@@ -197,12 +205,17 @@ namespace Network
             }
             m_PakManager.HandlePacket(buf, _socksize, (SOCKET_TYPE)_socktype, this);
 
+            if(_socktype == (int)(SOCKET_TYPE.SC_PONG))
+            {
+                m_bPing = true;
+            }
+
             long inputPosition = _socksize + SOCKET_DEFINE.HEAD_SIZE + SOCKET_DEFINE.SIZE_SIZE;
             long remainDataSize = m_InputStream.Length - inputPosition;
             if(remainDataSize > 0)
             {
                 byte[] remainData = new byte[remainDataSize];
-                int readsize = m_InputStream.Read(remainData, (int)inputPosition, (int)remainDataSize);
+                int readsize = m_InputStream.Read(remainData, 0, (int)remainDataSize);
                 if(remainDataSize != readsize)
                 {
                     Console.WriteLine("Copy 2 TmpMemory Failed.");
@@ -308,8 +321,6 @@ namespace Network
 
             byte[] data = CS_PING.SerializeToBytes(ping);
             Send(data, data.Length, SOCKET_TYPE.CS_PING);
-
-            //m_bPing = true;
         }
 
         void TestSendPak()
