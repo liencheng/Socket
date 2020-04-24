@@ -77,6 +77,9 @@
     <ClInclude Include="Public\SocketStream\SocketStream.h">
       <Filter>Source\Public\SocketStream</Filter>
     </ClInclude>
+    <ClInclude Include="GameDefine\GameDefine_User.h">
+      <Filter>Source\GameDefine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

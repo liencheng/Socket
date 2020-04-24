@@ -53,6 +53,10 @@ void MyThread::Tick_ProcessSocket()
 
 	for (int idx = 0; idx < m_UserVec.size(); ++idx)
 	{
+		if (m_UserVec[idx].GetNetworkState() != NetworkState::CONNECTED)
+		{
+			continue;
+		}
 		FD_SET(m_UserVec[idx].m_socket.m_socket, &m_fs_read);
 		FD_SET(m_UserVec[idx].m_socket.m_socket, &m_fs_write);
 		FD_SET(m_UserVec[idx].m_socket.m_socket, &m_fs_exception);
@@ -60,12 +64,16 @@ void MyThread::Tick_ProcessSocket()
 	timeval tv;
 	tv.tv_usec = 0;
 	tv.tv_sec = 0;
-	int nRet = select(-1, &m_fs_read, &m_fs_write, &m_fs_exception, &tv);
 
-	if (nRet == SOCKET_ERROR)
+	if (m_fs_read.fd_count > 0 || m_fs_write.fd_count > 0 || m_fs_exception.fd_count > 0)
 	{
-		cout << "query sockets error" << endl;
-		return;
+		int nRet = select(-1, &m_fs_read, &m_fs_write, &m_fs_exception, &tv);
+		if (nRet == SOCKET_ERROR)
+		{
+			int errorno = WSAGetLastError();
+			MyLog::Log("query sockets error, errorNo.{%d}", errorno);
+			return;
+		}
 	}
 }
 
@@ -88,7 +96,9 @@ void MyThread::Tick_ProcessInput()
 			}
 			else if (recvlen == SOCKET_ERROR)
 			{
-				cout << "socket error. sock:" << sock << endl;
+				int errorno = WSAGetLastError();
+				MyLog::Log("socket error. sock(%d), errorno(%d)", sock, errorno);
+				m_UserVec[idx].SetNetworkState(NetworkState::DISCONNECTED);
 			}
 			else
 			{
@@ -133,6 +143,7 @@ bool MyThreadPool::PopUser(ClientUser* pClientUser)
 
 	pClientUser->m_socket = rUser.m_socket;
 	pClientUser->m_UserId = rUser.m_UserId;
+	pClientUser->SetNetworkState(rUser.GetNetworkState());
 
 	cout << "get client user" << endl;
 	return true;

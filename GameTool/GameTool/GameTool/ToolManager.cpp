@@ -42,6 +42,7 @@ void ToolManager::AcceptNewPlayer()
 	MySocket mySock(sock, addr_in);
 
 	ClientUser user(1, mySock);
+	user.SetNetworkState(NetworkState::CONNECTED);
 	m_rThreadPool.PushUser(user);
 	//m_player_list.push_back(mySock);
 

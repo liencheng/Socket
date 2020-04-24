@@ -13,7 +13,11 @@ public:
 	{}
 	~MySocket(){}
 
+	SOCKET GetSock() const{ return m_socket; }
 public:
 	SOCKET  m_socket;
 	sockaddr_in m_addr_in;
+	
+private:
+
 };

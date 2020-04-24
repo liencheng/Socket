@@ -9,7 +9,6 @@
 #include <iostream>
 #include "Packet/PKHandlerMgr.h"
 
-
 class ClientUser
 {
 public:
@@ -26,12 +25,14 @@ public:
 		m_CurPackType = PACKET_TYPE::INVALID;
 		m_SockData.Clean();
 		m_SendBuf.Clean();
+		m_NetworkState = NetworkState::INVALID;
 	}
 
 	InputStream &GetInputStream(){ return m_SockData; }
 
 	void ProcessInput();
 	void ProcessOutput();
+	
 
 public:
 	void RcvPacket(const Protobuf::CS_PING& rPacket) 
@@ -47,6 +48,10 @@ public:
 	};
 	
 	void PushPak(char *bBuf, int size, PACKET_TYPE type);
+
+	NetworkState GetNetworkState() const{ return m_NetworkState; }
+	void SetNetworkState(NetworkState state){ m_NetworkState = state; }
+
 		
 public:
 	int m_UserId;
@@ -56,4 +61,5 @@ private:
 	PACKET_TYPE m_CurPackType = PACKET_TYPE::INVALID;
 	InputStream m_SockData;
 	OutputStream m_SendBuf;
+	NetworkState m_NetworkState;
 };
