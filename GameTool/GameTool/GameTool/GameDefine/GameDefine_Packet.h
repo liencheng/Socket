@@ -2,6 +2,7 @@
 
 #define  PACK_HEAD_LENGTH (sizeof(int) + sizeof(int))
 #define  SEND_BUF_MAX (2048)
+#define  NETWORKDLOSTTIME (10)
 
 enum PACKET_TYPE
 {

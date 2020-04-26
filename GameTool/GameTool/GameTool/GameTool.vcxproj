@@ -86,6 +86,8 @@
   <ItemGroup>
     <ClInclude Include="ClientUser.h" />
     <ClInclude Include="GameDefine\GameDefine_Packet.h" />
+    <ClInclude Include="GameDefine\GameDefine_User.h" />
+    <ClInclude Include="GameDefine\mytype.h" />
     <ClInclude Include="MySocket.h" />
     <ClInclude Include="Packet\Handler\cs_ping_packet.h" />
     <ClInclude Include="Packet\Handler\PacketBase.h" />
@@ -97,6 +99,7 @@
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ToolManager.h" />
     <ClInclude Include="Utils\MyLog.h" />
+    <ClInclude Include="Utils\TimeUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientUser.cpp" />
@@ -112,6 +115,7 @@
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="ToolManager.cpp" />
     <ClCompile Include="Utils\MyLog.cpp" />
+    <ClCompile Include="Utils\TimeUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

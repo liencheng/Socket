@@ -43,6 +43,8 @@ public:
 	void  StartThread();
 
 	void Tick();
+	void TickUser();
+	void Tick_DisConnectUser();
 	void Tick_ProcessSocket();
 	void Tick_ProcessInput();
 	void Tick_ProcessOutput();

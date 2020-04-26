@@ -89,6 +89,7 @@ void ClientUser::ProcessInput()
 }
 void ClientUser::ProcessOutput()
 {
+	return;
 	if (!m_SendBuf.WaitSend())
 	{
 		return;
@@ -136,4 +137,12 @@ void ClientUser::PushPak(char *bBuf, int size, PACKET_TYPE type)
 	m_SendBuf.Write(nTypeByte, INT_SIZE);
 	//Êý¾Ý
 	m_SendBuf.Write(bBuf, size);
+}
+
+void ClientUser::Tick()
+{
+	if (m_socket.IsNetworkLost())
+	{
+		SetNetworkState(NetworkState::DISCONNECTED);
+	}
 }
