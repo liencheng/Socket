@@ -53,7 +53,6 @@ public:
 	
 	NetworkState GetNetworkState() const { return m_NetworkState; }
 	void SetNetworkState(NetworkState state) { m_NetworkState = state; }
-	const MySocket& GetSocket()const { return m_socket; }
 
 public:
 	int m_UserId;

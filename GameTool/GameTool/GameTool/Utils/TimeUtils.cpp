@@ -7,7 +7,7 @@ int64 MyTime::GetAnsiTime()
 {
 	if (m_AnistimeSec < 0)
 	{
-		time_t anistime = time(0);
+		time_t anistime = time(nullptr);
 		m_AnistimeSec = anistime;
 	}
 	return m_AnistimeSec;
@@ -17,8 +17,10 @@ tm& MyTime::GetLocaltime()
 {
 	if (nullptr == m_LocalTime)
 	{
-		int64 anistimesec = GetAnsiTime();
-		m_LocalTime = gmtime((time_t*)(&anistimesec));
+		time_t anistimesec = GetAnsiTime();
+		tm* pTm;
+		pTm = gmtime(&anistimesec);
+		m_LocalTime = pTm;
 	}
 	return *(m_LocalTime);
 }
