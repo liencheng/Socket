@@ -15,8 +15,6 @@ void ClientUser::ProcessInput()
 		int nSize = 0;
 		if (m_SockData.ReadHeader(nType, nSize))
 		{
-			std::cout << nType << endl;
-			std::cout << nSize << endl;
 			m_CurPackType = PACKET_TYPE(nType);
 			m_CurPackSize = nSize;
 		}
@@ -89,7 +87,6 @@ void ClientUser::ProcessInput()
 }
 void ClientUser::ProcessOutput()
 {
-	return;
 	if (!m_SendBuf.WaitSend())
 	{
 		return;
@@ -114,7 +111,7 @@ void ClientUser::ProcessOutput()
 	else
 	{
 		m_SendBuf.SetPosition(m_SendBuf.GetPosition() + nSendSize);
-		MyLog::Log("send data:, sock:%d",sock);
+		//MyLog::Log("send data:, sock:%d",sock);
 	}
 }
 

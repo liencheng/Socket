@@ -29,8 +29,10 @@ void MyThread::Tick()
 		Tick_ProcessSocket();
 		Tick_ProcessInput();
 		Tick_ProcessOutput();
-
 		Tick_DisConnectUser();
+
+		Tick_Utils();
+
 	};
 
 }
@@ -163,6 +165,55 @@ void MyThread::Tick_ProcessOutput()
 			m_UserVec[idx].ProcessOutput();
 		}
 	}
+}
+
+void MyThread::Tick_Utils()
+{
+	tm&rTm = MyTime::GetLocaltime();
+
+	if (rTm.tm_sec != m_LastTickTimeTm.tm_sec)
+	{
+		OnDiffSec(rTm);
+	}
+	if (rTm.tm_min != m_LastTickTimeTm.tm_min)
+	{
+		OnDiffMin(rTm);
+	}
+	if (rTm.tm_hour != m_LastTickTimeTm.tm_hour)
+	{
+		OnDiffHour(rTm);
+	}
+
+	m_LastTickTimeTm = rTm;
+
+}
+
+void MyThread::OnDiffSec(const tm& rTm)
+{
+
+}
+
+void MyThread::OnDiffMin(const tm& rTm)
+{
+	Tick_PrintPoolInfo();
+}
+void MyThread::OnDiffHour(const tm& rTm)
+{
+
+}
+
+void MyThread::Tick_PrintPoolInfo()
+{
+	int connectedCnt = 0;
+	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	{
+		if (m_UserVec[idx].GetNetworkState() == NetworkState::CONNECTED)
+		{
+			connectedCnt++;
+		}
+	}
+	MyLog::Log("Cur Active Player,Count(%d)", connectedCnt);
+	
 }
 
 MyThreadPool::MyThreadPool()

@@ -8,7 +8,7 @@ void InputStream::Write(char *pByte, int len)
 	{
 		m_Data.push(pByte[idx]);
 	}
-	cout << "add data.len:" << len << endl;
+	//cout << "add data.len:" << len << endl;
     
 }
 
@@ -53,7 +53,7 @@ void OutputStream::Write(char *pBuf, int len)
 	{
 		m_Data.push(pBuf[idx]);
 	}
-	MyLog::Log("write to output.data len = %d", len);
+	//MyLog::Log("write to output.data len = %d", len);
 }
 
 char * OutputStream::GetSendBuf()

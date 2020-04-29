@@ -50,6 +50,8 @@ public:
 	void Tick_ProcessOutput();
 	void Tick_ProcessException();
 
+	void Tick_PrintPoolInfo();
+
 	void ReqUser();
 	
 	int GetMyThreadId() const
@@ -65,11 +67,23 @@ private:
 	fd_set m_fs_read;
 	fd_set m_fs_write;
 	fd_set m_fs_exception;
-
 	std::thread m_thread;
 	int	m_nThreadId;
 	std::vector<ClientUser> m_UserVec;
 	MyThreadPool  *m_ThreadPool;
+
+	/////////////////////////////////////////////
+	//TIIC¼ä¸ô
+private:
+	void Tick_Utils();
+	void OnDiffSec(const tm& tTm);
+	void OnDiffMin(const tm& rTm);
+	void OnDiffHour(const tm& rTm);
+
+private:
+	tm m_LastTickTimeTm;
+	//
+	////////////////////////////////////////////
 };
 
 class MyThreadPool

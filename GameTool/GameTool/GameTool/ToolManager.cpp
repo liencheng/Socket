@@ -102,14 +102,14 @@ void ToolManager::Tick_ProcessInput()
 				char* outbuf = new char[recvlen + 1];
 				memcpy(outbuf, buf, recvlen);
 				outbuf[recvlen] = 0;
-				cout << "recv data," << outbuf << endl;
+				//cout << "recv data," << outbuf << endl;
 				delete outbuf;
 			}
 		}
 	}
 	if (nValidSock > 0)
 	{
-		cout << "nValidSock:" << nValidSock << endl;
+		//cout << "nValidSock:" << nValidSock << endl;
 	}
 }
 
@@ -131,7 +131,7 @@ void ToolManager::Tick_ProcessOutput()
 				cout << "send error, sock:" << sock << endl;
 			}
 			else{
-				cout << "send, sock:" << sock << endl;
+				//cout << "send, sock:" << sock << endl;
 			}
 		}
 	}
