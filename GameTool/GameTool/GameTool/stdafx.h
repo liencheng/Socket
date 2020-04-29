@@ -12,6 +12,8 @@
 #include <iostream>
 #include "Utils/MyLog.h"
 #include "GameDefine/GameDefine_User.h"
+#include "GameDefine/mytype.h"
+#include "Utils/TimeUtils.h"
 
 
 

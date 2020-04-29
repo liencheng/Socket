@@ -38,7 +38,6 @@ void ToolManager::AcceptNewPlayer()
 		cout << "accept new player error" << endl;
 		return;
 	}
-
 	MySocket mySock(sock, addr_in);
 
 	ClientUser user(1, mySock);

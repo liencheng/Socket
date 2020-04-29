@@ -20,8 +20,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -53,7 +53,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../..\Tool\protobuf\protobuf-2.6.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\002_VS\Socket\GameTool\Tool\protobuf\protobuf-2.6.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
@@ -87,6 +87,7 @@
     <ClInclude Include="ClientUser.h" />
     <ClInclude Include="GameDefine\GameDefine_Packet.h" />
     <ClInclude Include="GameDefine\GameDefine_User.h" />
+    <ClInclude Include="GameDefine\mytype.h" />
     <ClInclude Include="MySocket.h" />
     <ClInclude Include="Packet\Handler\cs_ping_packet.h" />
     <ClInclude Include="Packet\Handler\PacketBase.h" />
@@ -98,6 +99,7 @@
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ToolManager.h" />
     <ClInclude Include="Utils\MyLog.h" />
+    <ClInclude Include="Utils\TimeUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientUser.cpp" />
@@ -113,6 +115,7 @@
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="ToolManager.cpp" />
     <ClCompile Include="Utils\MyLog.cpp" />
+    <ClCompile Include="Utils\TimeUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

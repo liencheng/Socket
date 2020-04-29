@@ -9,6 +9,7 @@
 #include <iostream>
 #include "Packet/PKHandlerMgr.h"
 
+
 class ClientUser
 {
 public:
@@ -30,13 +31,14 @@ public:
 
 	InputStream &GetInputStream(){ return m_SockData; }
 
+	void Tick();
 	void ProcessInput();
 	void ProcessOutput();
-	
 
 public:
 	void RcvPacket(const Protobuf::CS_PING& rPacket) 
 	{
+		m_socket.SetLastActiveTime(MyTime::GetAnsiTime());
 		MyLog::Log("rev packet::pint, time = %d, id = %d, name = %s"
 			, rPacket.ansi_time()
 			, rPacket.id()
@@ -48,11 +50,11 @@ public:
 	};
 	
 	void PushPak(char *bBuf, int size, PACKET_TYPE type);
+	
+	NetworkState GetNetworkState() const { return m_NetworkState; }
+	void SetNetworkState(NetworkState state) { m_NetworkState = state; }
+	const MySocket& GetSocket()const { return m_socket; }
 
-	NetworkState GetNetworkState() const{ return m_NetworkState; }
-	void SetNetworkState(NetworkState state){ m_NetworkState = state; }
-
-		
 public:
 	int m_UserId;
 	MySocket m_socket;

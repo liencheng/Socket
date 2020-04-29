@@ -42,7 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientRobotLogic.cs" />
-    <Compile Include="Define\SOCKET_DEFINE.cs" />
+    <Compile Include="Define\GameDefine_Socket.cs" />
     <Compile Include="MySocket.cs" />
     <Compile Include="PbMsg\PbMsg.cs" />
     <Compile Include="PbMsg\PbMsg.Serializer.cs" />

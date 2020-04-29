@@ -23,12 +23,38 @@ void MyThread::Tick()
 	while (true)
 	{
 		Sleep(10);
+		TickUser();
+
 		ReqUser();
 		Tick_ProcessSocket();
 		Tick_ProcessInput();
 		Tick_ProcessOutput();
+
+		Tick_DisConnectUser();
 	};
 
+}
+
+void MyThread::TickUser()
+{
+	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	{
+		m_UserVec[idx].Tick();
+	}
+
+}
+
+void MyThread::Tick_DisConnectUser()
+{
+	int nCt = m_UserVec.size();
+	for (int idx = nCt - 1; idx >= 0; --idx)
+	{
+		if (m_UserVec[idx].GetNetworkState() == NetworkState::DISCONNECTED)
+		{
+			MyLog::Log("del disconnet:robot,{%d}", m_UserVec[idx].m_UserId);
+			m_UserVec.erase(m_UserVec.begin() + idx);
+		}
+	}
 }
 
 void MyThread::ReqUser()
@@ -36,6 +62,7 @@ void MyThread::ReqUser()
 	ClientUser rUser(-1, MySocket());
 	if (m_ThreadPool->PopUser(&rUser))
 	{
+		rUser.m_socket.SetLastActiveTime(MyTime::GetAnsiTime());
 		m_UserVec.push_back(rUser);
 		cout << "pid:" << GetCurrentThreadId() << endl;
 	}
@@ -65,14 +92,27 @@ void MyThread::Tick_ProcessSocket()
 	tv.tv_usec = 0;
 	tv.tv_sec = 0;
 
-	if (m_fs_read.fd_count > 0 || m_fs_write.fd_count > 0 || m_fs_exception.fd_count > 0)
+	if (m_fs_read.fd_count > 0 || m_fs_read.fd_count > 0 || m_fs_exception.fd_count > 0)
 	{
+
 		int nRet = select(-1, &m_fs_read, &m_fs_write, &m_fs_exception, &tv);
+
 		if (nRet == SOCKET_ERROR)
 		{
-			int errorno = WSAGetLastError();
-			MyLog::Log("query sockets error, errorNo.{%d}", errorno);
+			cout << "query sockets error" << endl;
 			return;
+		}
+	}
+}
+
+void MyThread::Tick_ProcessException()
+{
+	int nValidSock = 0;
+	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	{
+		SOCKET sock = m_UserVec[idx].m_socket.m_socket;
+		if (FD_ISSET(sock, &m_fs_exception))
+		{
 		}
 	}
 }
@@ -83,7 +123,8 @@ void MyThread::Tick_ProcessInput()
 	for (int idx = 0; idx < m_UserVec.size(); ++idx)
 	{
 		SOCKET sock = m_UserVec[idx].m_socket.m_socket;
-		if (FD_ISSET(sock, &m_fs_read))
+		
+		if (FD_ISSET(sock, &m_fs_read) && !FD_ISSET(sock, &m_fs_exception))
 		{
 			char buf[2048];
 			memset(buf, 0, sizeof(buf));
@@ -97,7 +138,9 @@ void MyThread::Tick_ProcessInput()
 			else if (recvlen == SOCKET_ERROR)
 			{
 				int errorno = WSAGetLastError();
-				MyLog::Log("socket error. sock(%d), errorno(%d)", sock, errorno);
+
+				MyLog::Log("recv. socket error. sock:{%d}, errorno:{%d}" ,sock, errorno);
+
 				m_UserVec[idx].SetNetworkState(NetworkState::DISCONNECTED);
 			}
 			else
