@@ -31,8 +31,6 @@ void MyThread::Tick()
 		Tick_ProcessOutput();
 		Tick_DisConnectUser();
 
-		Tick_Utils();
-
 	};
 
 }
@@ -55,6 +53,7 @@ void MyThread::Tick_DisConnectUser()
 		{
 			MyLog::Log("del disconnet:robot,{%d}", m_UserVec[idx].m_UserId);
 			m_UserVec.erase(m_UserVec.begin() + idx);
+			DecValidUserCnt();
 		}
 	}
 }
@@ -64,8 +63,9 @@ void MyThread::ReqUser()
 	ClientUser rUser(-1, MySocket());
 	if (m_ThreadPool->PopUser(&rUser))
 	{
-		rUser.m_socket.SetLastActiveTime(MyTime::GetAnsiTime());
+		rUser.m_socket.SetLastActiveTime(MyTimeUtils::GetAnsiTime());
 		m_UserVec.push_back(rUser);
+		IncValidUserCnt();
 		cout << "pid:" << GetCurrentThreadId() << endl;
 	}
 }
@@ -167,41 +167,6 @@ void MyThread::Tick_ProcessOutput()
 	}
 }
 
-void MyThread::Tick_Utils()
-{
-	tm&rTm = MyTime::GetLocaltime();
-
-	if (rTm.tm_sec != m_LastTickTimeTm.tm_sec)
-	{
-		OnDiffSec(rTm);
-	}
-	if (rTm.tm_min != m_LastTickTimeTm.tm_min)
-	{
-		OnDiffMin(rTm);
-	}
-	if (rTm.tm_hour != m_LastTickTimeTm.tm_hour)
-	{
-		OnDiffHour(rTm);
-	}
-
-	m_LastTickTimeTm = rTm;
-
-}
-
-void MyThread::OnDiffSec(const tm& rTm)
-{
-
-}
-
-void MyThread::OnDiffMin(const tm& rTm)
-{
-	Tick_PrintPoolInfo();
-}
-void MyThread::OnDiffHour(const tm& rTm)
-{
-
-}
-
 void MyThread::Tick_PrintPoolInfo()
 {
 	int connectedCnt = 0;
@@ -238,8 +203,7 @@ bool MyThreadPool::PopUser(ClientUser* pClientUser)
 	pClientUser->m_socket = rUser.m_socket;
 	pClientUser->m_UserId = rUser.m_UserId;
 	pClientUser->SetNetworkState(rUser.GetNetworkState());
-
-	cout << "get client user" << endl;
+	MyLog::Log("pop user,id(%d)", rUser.m_UserId);
 	return true;
 }
 
@@ -247,7 +211,23 @@ bool MyThreadPool::PushUser(const ClientUser& rUser)
 {
 	LOCK;
 	m_GlobalUserQueue.push(rUser);
-
-	cout << "add client user." << endl;
+	MyLog::Log("new user,id(%d)", rUser.m_UserId);
 	return true;
+}
+
+void MyThreadPool::Tick_PrintThreadInfo()
+{
+	if (m_TimeClock.DiffMin())
+	{
+		int32 nValidUser = 0;
+		for (int idx = 0; idx < m_ThreadPool.size(); ++idx)
+		{
+			int32 nUserCnt = m_ThreadPool[idx].GetValidUserCnt();
+			int32 nThreadId = m_ThreadPool[idx].GetMyThreadId();
+			nValidUser += nUserCnt;
+
+			MyLog::Log("ThreanInfo, usercnt(%d), thread(%d)", nUserCnt, nThreadId);
+		}
+		MyLog::Log("ThreanInfo, total usercnt(%d), threadnum(%d)", nValidUser, m_ThreadPool.size());
+	}
 }

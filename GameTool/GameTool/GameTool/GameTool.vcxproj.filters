@@ -86,6 +86,9 @@
     <ClInclude Include="GameDefine\mytype.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\GuidHelper.h">
+      <Filter>Source\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -119,6 +122,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="Utils\TimeUtils.cpp">
+      <Filter>Source\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\GuidHelper.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
   </ItemGroup>

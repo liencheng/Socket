@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "ToolManager.h"
+#include "Utils/GuidHelper.h"
 
 void ToolManager::Tick_NewConnet()
 {
@@ -40,10 +41,9 @@ void ToolManager::AcceptNewPlayer()
 	}
 	MySocket mySock(sock, addr_in);
 
-	ClientUser user(1, mySock);
+	ClientUser user(GEN_USER_GUID(), mySock);
 	user.SetNetworkState(NetworkState::CONNECTED);
 	m_rThreadPool.PushUser(user);
-	//m_player_list.push_back(mySock);
 
 	cout << "accept succ." << endl;
 }

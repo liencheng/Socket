@@ -38,7 +38,7 @@ public:
 public:
 	void RcvPacket(const Protobuf::CS_PING& rPacket) 
 	{
-		m_socket.SetLastActiveTime(MyTime::GetAnsiTime());
+		m_socket.SetLastActiveTime(MyTimeUtils::GetAnsiTime());
 		/*MyLog::Log("rev packet::pint, time = %d, id = %d, name = %s"
 			, rPacket.ansi_time()
 			, rPacket.id()

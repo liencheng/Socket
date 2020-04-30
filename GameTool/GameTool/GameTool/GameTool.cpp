@@ -13,9 +13,8 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	
 	//init time
-	MyTime::init();
+	MyTimeUtils::init();
 	//load config
-	//LoadConfig()
 	//init thread
 	cout << "main thread pid:" << GetCurrentThreadId() << endl;
 	int nTickCt = 0;
@@ -28,7 +27,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	while (true)
 	{
 		Sleep(10);
-		MyTime::tick();
+		MyTimeUtils::tick();
 		toolMgr.Tick();
 	};
 

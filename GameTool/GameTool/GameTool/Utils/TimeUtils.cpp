@@ -1,9 +1,9 @@
 #include "TimeUtils.h"
 
-time_t MyTime::m_AnistimeSec = 0;
-tm * MyTime::m_LocalTime = nullptr;
+time_t MyTimeUtils::m_AnistimeSec = 0;
+tm * MyTimeUtils::m_LocalTime = nullptr;
 
-int64 MyTime::GetAnsiTime()
+int64 MyTimeUtils::GetAnsiTime()
 {
 	if (m_AnistimeSec < 0)
 	{
@@ -13,7 +13,7 @@ int64 MyTime::GetAnsiTime()
 	return m_AnistimeSec;
 }
 
-tm& MyTime::GetLocaltime()
+tm& MyTimeUtils::GetLocaltime()
 {
 	if (nullptr == m_LocalTime)
 	{
@@ -24,15 +24,62 @@ tm& MyTime::GetLocaltime()
 	}
 	return *(m_LocalTime);
 }
-void MyTime::init()
+void MyTimeUtils::init()
 {
 	m_AnistimeSec = -1;
 	m_LocalTime = nullptr;
 }
-void MyTime::tick()
+void MyTimeUtils::tick()
 {
 	time_t ansitime;
 	time(&ansitime);
 	m_AnistimeSec = ansitime;
 	m_LocalTime = localtime(&m_AnistimeSec);
+}
+
+
+bool MyClockTime::DiffSec()
+{
+	int nAnsiSec = MyTimeUtils::GetAnsiTime();
+	if (m_AnsitimeSec != nAnsiSec)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool MyClockTime::DiffMin()
+{
+	tm &rCurTM = MyTimeUtils::GetLocaltime();
+	if (m_LastTickTimeTm.tm_year != rCurTM.tm_year
+		|| m_LastTickTimeTm.tm_mon != rCurTM.tm_mon
+		|| m_LastTickTimeTm.tm_mday != rCurTM.tm_mday
+		|| m_LastTickTimeTm.tm_hour != rCurTM.tm_hour
+		|| m_LastTickTimeTm.tm_min != rCurTM.tm_min)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool MyClockTime::DiffHour()
+{
+	tm &rCurTM = MyTimeUtils::GetLocaltime();
+	if (m_LastTickTimeTm.tm_year != rCurTM.tm_year
+		|| m_LastTickTimeTm.tm_mon != rCurTM.tm_mon
+		|| m_LastTickTimeTm.tm_mday != rCurTM.tm_mday
+		|| m_LastTickTimeTm.tm_hour != rCurTM.tm_hour)
+	{
+		return true;
+	}
+	return false;
+}
+
+void MyClockTime::Tick()
+{
+	tm &rCurTM = MyTimeUtils::GetLocaltime();
+	m_LastTickTimeTm = rCurTM;
+
+	int64 nCurAnsitimeSec = MyTimeUtils::GetAnsiTime();
+	m_AnsitimeSec = nCurAnsitimeSec;
 }

@@ -21,7 +21,7 @@ public:
 public:
 	bool IsNetworkLost()const
 	{
-		int64 nCurAnistime = MyTime::GetAnsiTime();
+		int64 nCurAnistime = MyTimeUtils::GetAnsiTime();
 		return nCurAnistime - m_LastActiveTime >= NETWORKDLOSTTIME;
 	}
 	void SetLastActiveTime(int val) { m_LastActiveTime = val; }

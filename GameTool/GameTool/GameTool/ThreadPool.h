@@ -12,23 +12,23 @@ using namespace std;
 
 class MyThreadPool;
 
-
-
-
 class MyThread
 {
 public:
 	MyThread()
 	{
+		Clean();
 	}
 	MyThread(int nThreadId, MyThreadPool* pPool) :
 		m_nThreadId(nThreadId),
 		m_ThreadPool(pPool)
 	{ 
+		Clean();
 	}
 
 	MyThread(const MyThread &my)
 	{
+		Clean();
 		this->m_nThreadId = my.GetMyThreadId();
 		this->m_ThreadPool = my.GetThreadPoolPtr();
 	}
@@ -63,6 +63,22 @@ public:
 		return m_ThreadPool;
 	}
 
+	void Clean()
+	{
+		m_ValidUserCnt = 0;
+	}
+
+	void IncValidUserCnt()
+	{
+		m_ValidUserCnt++;
+	}
+	void DecValidUserCnt()
+	{
+		m_ValidUserCnt--;
+	}
+
+	int32 GetValidUserCnt() const{ return m_ValidUserCnt; }
+
 private:
 	fd_set m_fs_read;
 	fd_set m_fs_write;
@@ -71,19 +87,7 @@ private:
 	int	m_nThreadId;
 	std::vector<ClientUser> m_UserVec;
 	MyThreadPool  *m_ThreadPool;
-
-	/////////////////////////////////////////////
-	//TIIC¼ä¸ô
-private:
-	void Tick_Utils();
-	void OnDiffSec(const tm& tTm);
-	void OnDiffMin(const tm& rTm);
-	void OnDiffHour(const tm& rTm);
-
-private:
-	tm m_LastTickTimeTm;
-	//
-	////////////////////////////////////////////
+	int m_ValidUserCnt;
 };
 
 class MyThreadPool
@@ -115,11 +119,20 @@ public:
 		}
 	}
 
+	void Tick()
+	{
+		Tick_PrintThreadInfo();
+		m_TimeClock.Tick();
+	}
+
+	void Tick_PrintThreadInfo();
+
 	bool PushUser(const ClientUser& rUser);
 	bool PopUser(ClientUser* pClientUser);
 private:
-	std::queue<ClientUser> m_GlobalUserQueue;
 	int m_nThreadCount = 0;
+	std::queue<ClientUser> m_GlobalUserQueue;
 	std::vector<MyThread> m_ThreadPool;
+	MyClockTime m_TimeClock;
 };
 

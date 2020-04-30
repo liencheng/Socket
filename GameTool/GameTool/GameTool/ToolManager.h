@@ -14,7 +14,7 @@
 #define SERVER_ADDR ("127.0.0.1")
 #define	PORT (2718)
 #define BLOCK_LOG_MAX (2000)
-#define THREAD_POOL_COUNT (10)
+#define THREAD_POOL_COUNT (20)
 
 #pragma comment(lib, "WS2_32.lib")
 
@@ -100,6 +100,8 @@ public:
 		Tick_ProcessInput();
 		Tick_ProcessOutput();
 		Tick_NewConnet();
+
+		m_rThreadPool.Tick();
 	}
 	void Tick_NewConnet();
 	void Tick_ProcessSocket();
