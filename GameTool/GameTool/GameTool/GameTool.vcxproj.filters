@@ -33,6 +33,15 @@
     <Filter Include="Source\Public\SocketStream">
       <UniqueIdentifier>{e9f435b8-3e44-4a2b-a3da-124271e58651}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Room">
+      <UniqueIdentifier>{559402c9-24a4-43f3-9c5c-c0473555d569}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\MyRoutine">
+      <UniqueIdentifier>{e63faa37-700e-417b-99f0-6c167b178cc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Room\Entity">
+      <UniqueIdentifier>{9d1964a5-f467-4abd-8a9e-dd30220a23e0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -89,6 +98,24 @@
     <ClInclude Include="Utils\GuidHelper.h">
       <Filter>Source\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="GameDefine\GameDefine_Room.h">
+      <Filter>Source\GameDefine</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\Room.h">
+      <Filter>Source\Room</Filter>
+    </ClInclude>
+    <ClInclude Include="MyRoutine\MyRoutine.h">
+      <Filter>Source\MyRoutine</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\Entity\User.h">
+      <Filter>Source\Room\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\IncIdHelper.h">
+      <Filter>Source\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Room\RoomManager.h">
+      <Filter>Source\Room</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -126,6 +153,21 @@
     </ClCompile>
     <ClCompile Include="Utils\GuidHelper.cpp">
       <Filter>Source\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\Room.cpp">
+      <Filter>Source\Room</Filter>
+    </ClCompile>
+    <ClCompile Include="MyRoutine\MyRoutine.cpp">
+      <Filter>Source\MyRoutine</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\Entity\User.cpp">
+      <Filter>Source\Room\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\IncIdHelper.cpp">
+      <Filter>Source\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Room\RoomManager.cpp">
+      <Filter>Source\Room</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

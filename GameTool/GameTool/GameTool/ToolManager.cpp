@@ -43,7 +43,12 @@ void ToolManager::AcceptNewPlayer()
 
 	ClientUser user(GEN_USER_GUID(), mySock);
 	user.SetNetworkState(NetworkState::CONNECTED);
-	m_rThreadPool.PushUser(user);
+	RoomInfo roomInfo;
+	roomInfo.RoomId = -1;
+	roomInfo.RoomType = (int32)rt_type::rt_city;
+	m_RoomManager.Enter2Room(user, roomInfo);
+
+	//m_rThreadPool.PushUser(user);
 
 	cout << "accept succ." << endl;
 }

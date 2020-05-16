@@ -5,6 +5,9 @@
 #include <queue>
 #include "ClientUser.h"
 #include <iostream>
+#include "GameDefine/GameDefine_Room.h"
+#include "Room/Room.h"
+#include "MyRoutine/MyRoutine.h"
 
 //#include "windows.h"
 
@@ -133,6 +136,59 @@ private:
 	int m_nThreadCount = 0;
 	std::queue<ClientUser> m_GlobalUserQueue;
 	std::vector<MyThread> m_ThreadPool;
+	MyClockTime m_TimeClock;
+};
+
+using my_routine_vec = std::vector<myroutine*>;
+using my_thread_vec = std::vector<std::thread*>;
+class  MyThreadPoolEx
+{
+#define RT_LOCK std::lock_guard<std::mutex> lock(m_mutex);
+public:
+	MyThreadPoolEx(int nPoolSize) :
+		m_mutex(std::mutex()),
+		m_poolsize(nPoolSize)
+	{
+		Clean();
+	}
+	~MyThreadPoolEx();
+
+	void Clean()
+	{
+		m_rt_vec.clear();
+		m_thread_vec.clear();
+		m_take_index = 0;
+		m_next_routine_id = 0;
+	}
+public:
+	void start();
+	void stop();
+	void release_thread();
+	void tick();
+	int32 addroutine(rt_type rttype);
+	int32 delroutine(int rt_id);
+	myroutine * getrotuine(const RoomInfo &rRoomInfo);
+	void release_routine();
+	myroutine * takeroutine();
+	int32 next_routine_id(){ return m_next_routine_id++; };
+
+
+	room * getroom(int32 rt_id);
+	room * getroomfree();
+	//////////////////////////////////////////////////////////////////////////
+	//debug start
+public:
+	void Tick_PrintRoomInfo();
+	//debug end
+	//////////////////////////////////////////////////////////////////////////
+private:
+	my_thread_vec m_thread_vec;
+	my_routine_vec m_rt_vec;
+	std::mutex m_mutex;
+	int32 m_poolsize;
+	int32 m_take_index;
+	int32 m_next_routine_id;
+
 	MyClockTime m_TimeClock;
 };
 

@@ -154,29 +154,39 @@
   <ItemGroup>
     <ClInclude Include="ClientUser.h" />
     <ClInclude Include="GameDefine\GameDefine_Packet.h" />
+    <ClInclude Include="GameDefine\GameDefine_Room.h" />
     <ClInclude Include="GameDefine\GameDefine_User.h" />
     <ClInclude Include="GameDefine\mytype.h" />
+    <ClInclude Include="MyRoutine\MyRoutine.h" />
     <ClInclude Include="MySocket.h" />
     <ClInclude Include="Packet\Handler\cs_ping_packet.h" />
     <ClInclude Include="Packet\Handler\PacketBase.h" />
     <ClInclude Include="Packet\PbMsg.pb.h" />
     <ClInclude Include="Packet\PKHandlerMgr.h" />
     <ClInclude Include="Public\SocketStream\SocketStream.h" />
+    <ClInclude Include="Room\Entity\User.h" />
+    <ClInclude Include="Room\Room.h" />
+    <ClInclude Include="Room\RoomManager.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ToolManager.h" />
     <ClInclude Include="Utils\GuidHelper.h" />
+    <ClInclude Include="Utils\IncIdHelper.h" />
     <ClInclude Include="Utils\MyLog.h" />
     <ClInclude Include="Utils\TimeUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClientUser.cpp" />
     <ClCompile Include="GameTool.cpp" />
+    <ClCompile Include="MyRoutine\MyRoutine.cpp" />
     <ClCompile Include="MySocket.cpp" />
     <ClCompile Include="Packet\PbMsg.pb.cc" />
     <ClCompile Include="Packet\PKHandlerMgr.cpp" />
     <ClCompile Include="Public\SocketStream\SocketStream.cpp" />
+    <ClCompile Include="Room\Entity\User.cpp" />
+    <ClCompile Include="Room\Room.cpp" />
+    <ClCompile Include="Room\RoomManager.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -186,6 +196,7 @@
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="ToolManager.cpp" />
     <ClCompile Include="Utils\GuidHelper.cpp" />
+    <ClCompile Include="Utils\IncIdHelper.cpp" />
     <ClCompile Include="Utils\MyLog.cpp" />
     <ClCompile Include="Utils\TimeUtils.cpp" />
   </ItemGroup>

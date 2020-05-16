@@ -19,9 +19,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	cout << "main thread pid:" << GetCurrentThreadId() << endl;
 	int nTickCt = 0;
 	ToolManager toolMgr;
-	toolMgr.InitNetWork();
-	toolMgr.InitAddr();
-	toolMgr.InitListenSocket();
+	toolMgr.Start();
 	//tick logic
 	cout << "main tread start" << endl;
 	while (true)

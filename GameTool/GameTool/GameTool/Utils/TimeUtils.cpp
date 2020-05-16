@@ -1,7 +1,10 @@
 #include "TimeUtils.h"
+#include "sys/timeb.h"
+#include "windows.h"
 
 time_t MyTimeUtils::m_AnistimeSec = 0;
 tm * MyTimeUtils::m_LocalTime = nullptr;
+uint64 MyTimeUtils::m_AnsitimeMilliSec = 0;
 
 int64 MyTimeUtils::GetAnsiTime()
 {
@@ -11,6 +14,19 @@ int64 MyTimeUtils::GetAnsiTime()
 		m_AnistimeSec = anistime;
 	}
 	return m_AnistimeSec;
+}
+
+uint64 MyTimeUtils::GetAnsiTimeMilliSec()
+{
+	if (m_AnsitimeMilliSec < 0)
+	{
+		SYSTEMTIME sys;
+		GetLocalTime(&sys);
+		time_t anistime = time(nullptr);
+		m_AnistimeSec = anistime;
+		m_AnsitimeMilliSec = sys.wMilliseconds + (uint64)m_AnistimeSec * 1000;
+	}
+	return m_AnsitimeMilliSec;
 }
 
 tm& MyTimeUtils::GetLocaltime()
@@ -35,6 +51,10 @@ void MyTimeUtils::tick()
 	time(&ansitime);
 	m_AnistimeSec = ansitime;
 	m_LocalTime = localtime(&m_AnistimeSec);
+
+	SYSTEMTIME sys;
+	GetLocalTime(&sys);
+	m_AnsitimeMilliSec = (uint64)m_AnistimeSec*1000 + sys.wMilliseconds;
 }
 
 

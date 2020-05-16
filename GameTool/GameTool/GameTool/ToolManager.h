@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ThreadPool.h"
+#include "Room/RoomManager.h"
 
 
 #define SERVER_ADDR ("127.0.0.1")
@@ -21,7 +22,9 @@
 class ToolManager
 {
 public:
-	ToolManager() :m_rThreadPool(MyThreadPool(THREAD_POOL_COUNT))
+	ToolManager() :
+		m_rThreadPool(MyThreadPool(0)),
+		m_rThreadPoolEx(MyThreadPoolEx(THREAD_POOL_COUNT))
 	{ Clean(); };
 
 	~ToolManager(){
@@ -36,6 +39,20 @@ public:
 		FD_ZERO(&m_fs_read);
 		FD_ZERO(&m_fs_write);
 		FD_ZERO(&m_fs_exception);
+		m_RoomManager.Clean();
+	}
+	void Start()
+	{
+		InitRoomManager();
+		InitNetWork();
+		InitAddr();
+		InitListenSocket();
+
+		m_rThreadPoolEx.start();
+	}
+	void InitRoomManager()
+	{
+		m_RoomManager = RoomManager(&m_rThreadPoolEx);
 	}
 	void InitNetWork()
 	{
@@ -102,6 +119,7 @@ public:
 		Tick_NewConnet();
 
 		m_rThreadPool.Tick();
+		m_rThreadPoolEx.Tick_PrintRoomInfo();
 	}
 	void Tick_NewConnet();
 	void Tick_ProcessSocket();
@@ -124,4 +142,6 @@ private:
 	WSADATA m_wsadata;
 
 	MyThreadPool m_rThreadPool;
+	MyThreadPoolEx m_rThreadPoolEx;
+	RoomManager m_RoomManager;
 };

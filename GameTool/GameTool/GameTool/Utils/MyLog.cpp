@@ -1,4 +1,4 @@
-#include <string>
+#include <string>	
 #include <windows.h>
 #include <string>
 #include <fstream>
@@ -6,6 +6,7 @@
 #include <ctime>
 #include "MyLog.h"
 #include <iostream>
+
 
 void MyLog::Log(const char* format, ...)
 {
@@ -20,3 +21,9 @@ void MyLog::Log(const char* format, ...)
 		std::cout << strArgData << std::endl;
 
 }
+
+/*
+void MyLog::Log(const char * content)
+{
+	std::cout << content << std::endl;
+}*/

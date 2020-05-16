@@ -217,7 +217,7 @@ bool MyThreadPool::PushUser(const ClientUser& rUser)
 
 void MyThreadPool::Tick_PrintThreadInfo()
 {
-	if (m_TimeClock.DiffMin())
+	if (m_TimeClock.DiffSec())
 	{
 		int32 nValidUser = 0;
 		for (int idx = 0; idx < m_ThreadPool.size(); ++idx)
@@ -230,4 +230,207 @@ void MyThreadPool::Tick_PrintThreadInfo()
 		}
 		MyLog::Log("ThreanInfo, total usercnt(%d), threadnum(%d)", nValidUser, m_ThreadPool.size());
 	}
+}
+
+
+MyThreadPoolEx::~MyThreadPoolEx()
+{
+	//如果未成功推出，析构推出
+	if (m_thread_vec.size() > 0 
+		|| m_rt_vec.size()>0)
+	{
+		stop();
+	}
+}
+
+void MyThreadPoolEx::tick()
+{
+	int idx = 0;
+	while (true)
+	{
+		Sleep(10);
+		myroutine * rtPtr = takeroutine();
+		if (nullptr != rtPtr)
+		{
+			rtPtr->tick();
+			//MyLog::Log("treadid:%d", GetCurrentThreadId());
+		}
+	};
+}
+
+
+
+void MyThreadPoolEx::start()
+{
+	for (int32 idx = 0; idx < m_poolsize; ++idx)
+	{
+		m_thread_vec.push_back(new thread(&MyThreadPoolEx::tick, this));
+	}
+	MyLog::Log("start thread, count(%d)", m_poolsize);
+}
+
+void MyThreadPoolEx::stop()
+{
+	release_thread();
+	release_routine();
+}
+
+void MyThreadPoolEx::release_thread()
+{
+	for (my_thread_vec::iterator itF = m_thread_vec.begin(); itF != m_thread_vec.end(); ++itF)
+	{
+		if ((*itF)->joinable())
+		{
+			(*itF)->join();
+		}
+		delete *itF;
+	}
+	MyLog::Log("release thread, count(%d)", m_thread_vec.size());
+	m_thread_vec.clear();
+}
+
+int32 MyThreadPoolEx::addroutine(rt_type rttype)
+{
+	RT_LOCK;
+	myroutine * rt = nullptr;
+	switch (rttype)
+	{
+	case rt_type::rt_city:
+		rt = new room_city(next_routine_id());
+		break;
+	case rt_type::rt_wild:
+		rt = new room_wild(next_routine_id());
+		break;
+	case rt_type::rt_cs:
+		rt = new room_cs(next_routine_id());
+		break;
+	case rt_type::rt_table:
+		break;
+	default:
+		break;
+	}
+
+	if (rt == nullptr)
+	{
+		return -1;
+	}
+	m_rt_vec.push_back(rt);
+	return rt->get_id();
+}
+
+int32 MyThreadPoolEx::delroutine(int rt_id)
+{
+	RT_LOCK;
+	auto it = m_rt_vec.begin();
+	for (; it != m_rt_vec.end(); ++it)
+	{
+		if ((*it)->get_id() == rt_id)
+		{
+			delete *it;
+			m_rt_vec.erase(it);
+			return rt_id;
+		}
+	}
+	return -1;
+}
+
+myroutine * MyThreadPoolEx::getrotuine(const RoomInfo &rRoomInfo)
+{
+	RT_LOCK;
+	auto it = m_rt_vec.begin();
+	for (; it != m_rt_vec.end(); ++it)
+	{
+		if ((*it)->get_id() == rRoomInfo.RoomId)
+		{
+			return *it;
+		}
+	}
+	return nullptr;
+}
+
+room * MyThreadPoolEx::getroom(int32 rt_id)
+{
+	RT_LOCK;
+	auto it = m_rt_vec.begin();
+	for (; it != m_rt_vec.end(); ++it)
+	{
+		if ((*it)->get_id() == rt_id)
+		{
+			room *pRoom = dynamic_cast<room*>(*it);
+			return pRoom;
+		}
+	}
+	return nullptr;
+}
+
+room *MyThreadPoolEx::getroomfree()
+{
+	RT_LOCK;
+	auto it = m_rt_vec.begin();
+	for (; it != m_rt_vec.end(); ++it)
+	{
+		if ((*it)->get_rt_type() == rt_type::rt_city)
+		{
+			room *pRoom = dynamic_cast<room*>(*it);
+			if (pRoom != nullptr && !pRoom->IsUserFull())
+			{
+				return pRoom;
+			}
+		}
+	}
+	return nullptr;
+}
+
+myroutine * MyThreadPoolEx::takeroutine()
+{
+	RT_LOCK;
+	if (m_rt_vec.size() <= 0)
+	{
+		return nullptr;
+	}
+
+	int32 routine_size = m_rt_vec.size();
+	for (int32 idx = 0; idx < routine_size; ++idx)
+	{
+		 m_take_index = (m_take_index + idx) % routine_size;
+		 myroutine * rtPtr = m_rt_vec[m_take_index];
+		 if (nullptr != rtPtr && rtPtr->reach_tick())
+		 {
+			 return rtPtr;
+		 }
+	}
+	return nullptr;
+}
+
+void MyThreadPoolEx::release_routine()
+{
+	for (my_routine_vec::iterator itF = m_rt_vec.begin(); itF != m_rt_vec.end(); ++itF)
+	{
+		delete *itF;
+	}
+	MyLog::Log("release routine, count(%d)", m_rt_vec.size());
+	m_rt_vec.clear();
+}
+
+void MyThreadPoolEx::Tick_PrintRoomInfo()
+{
+	if (m_TimeClock.DiffSec())
+	{
+		int32 nValidUser = 0;
+		for (int idx = 0; idx < m_rt_vec.size(); ++idx)
+		{
+			const room *pRoom = dynamic_cast<room*>(m_rt_vec[idx]);
+			if (nullptr != pRoom)
+			{
+
+				int32 nUserCnt = pRoom->GetValidUserCnt();
+				int32 nThreadId = pRoom->get_id();
+				nValidUser += nUserCnt;
+
+				MyLog::Log("RoomInfo, usercnt(%d), room(%d)", nUserCnt, nThreadId);
+			}
+		}
+		MyLog::Log("RoomInfo, total usercnt(%d), roomnum(%d)", nValidUser, m_rt_vec.size());
+	}
+	m_TimeClock.Tick();
 }
