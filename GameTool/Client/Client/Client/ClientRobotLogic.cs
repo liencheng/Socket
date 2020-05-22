@@ -60,6 +60,7 @@ namespace Network
         {
             m_nSendDataLenth += nBytes;
             m_nTotalSendDataLenth += (ulong)(nBytes);
+            Console.WriteLine(m_nTotalSendDataLenth);
         }
 
         private int m_nSendDataLenth = 0;
@@ -67,8 +68,13 @@ namespace Network
         private ulong m_nTotalSendDataLenth = 0;
 
 
+        bool bSend = false;
         public void Send(byte [] data, int size, SOCKET_TYPE type)
         {
+            if(bSend)
+            {
+                //return;
+            }
             //写入类型
             int nType = (int)type;
             byte[] typebyte = BitConverter.GetBytes(nType);
@@ -78,6 +84,7 @@ namespace Network
             m_OutputStream.Write(sizebyte, 0, sizebyte.Length);
             //写入消息体
             m_OutputStream.Write(data, 0, size);
+            bSend = true;
         }
         public void ProcessOutput()
         {
@@ -289,11 +296,18 @@ namespace Network
             m_OutputStream.Position = 0;
             m_OutputStream.SetLength(0);
         }
+        private DateTime m_ConnectTime = new DateTime();
+
+        public void DelayConnect(double fMilSec)
+        {
+            m_ConnectTime = DateTime.Now;
+            m_ConnectTime = m_ConnectTime.AddMilliseconds(fMilSec);
+        }
         public void Update()
         {
             string addr_ip = "127.0.0.1";
             int addr_port = 2718;
-            if(!m_bConnectSuccess)
+            if(!m_bConnectSuccess && DateTime.Now > m_ConnectTime)
             {
                 Connect(addr_ip, addr_port);
                 Console.WriteLine("connecting...");

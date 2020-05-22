@@ -24,7 +24,7 @@ public class PbMsgManager
         CS_PING rSendPak = new CS_PING();
         rSendPak.id = 100001;
         rSendPak.ansi_time = (int)DateTime.Now.Ticks;
-        rSendPak.name = "test";
+        rSendPak.name = "st";
 
         byte[] data = CS_PING.SerializeToBytes(rSendPak);
         robot.Send(data, data.Length, SOCKET_TYPE.CS_PING);

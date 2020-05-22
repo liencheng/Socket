@@ -61,8 +61,8 @@ namespace Client
             {
                 ClientRobotLogic nl = new ClientRobotLogic(sp);
                 nlPool.Add(nl);
+                nl.DelayConnect(idx * 50); 
             }
-            nlPool.ForEach(nl => nl.Update());
             do
             {
                 Thread.Sleep(1000);
