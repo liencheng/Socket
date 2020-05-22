@@ -8,8 +8,9 @@ void InputStream::Write(char *pByte, int len)
 	{
 		m_Data.push(pByte[idx]);
 	}
+	m_WriteByte += len;
 	//cout << "add data.len:" << len << endl;
-    
+	//MyLog::Log("WriteByte:%d, newLen:%d", m_WriteByte, len);
 }
 
 bool InputStream::ReadPacket(char *pBuf, int len)
@@ -25,6 +26,8 @@ bool InputStream::ReadPacket(char *pBuf, int len)
 		pBuf[idx] = m_Data.front();
 		m_Data.pop();
 	}
+	m_ReadByte += len;
+	//MyLog::Log("ReadByte:%d, readLen:%d", m_ReadByte, len);
 	return true;;
 }
 
@@ -53,7 +56,6 @@ void OutputStream::Write(char *pBuf, int len)
 	{
 		m_Data.push(pBuf[idx]);
 	}
-	//MyLog::Log("write to output.data len = %d", len);
 }
 
 char * OutputStream::GetSendBuf()

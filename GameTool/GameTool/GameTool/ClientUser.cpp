@@ -8,6 +8,7 @@ using namespace std;
 
 void ClientUser::ProcessInput()
 {
+
 	PacketBase* pPak = nullptr;
 	if (m_CurPackType == PACKET_TYPE::INVALID)
 	{
@@ -18,9 +19,7 @@ void ClientUser::ProcessInput()
 			m_CurPackType = PACKET_TYPE(nType);
 			m_CurPackSize = nSize;
 		}
-		return;
 	}
-
 	if (m_CurPackType != PACKET_TYPE::INVALID  && m_CurPackSize > 0)
 	{
 		bool bRet = false;

@@ -22,6 +22,8 @@ public:
 	bool ReadHeader(int &nPackType, int &nPackSize);
 private:
 	std::queue<char> m_Data;
+	int32 m_WriteByte = 0;
+	int32 m_ReadByte = 0;
 };
 
 class OutputStream

@@ -49,12 +49,13 @@ public:
 	void RcvPacket(const Protobuf::CS_PING& rPacket) 
 	{
 		SetLastActiveTime(MyTimeUtils::GetAnsiTime());
-		/*MyLog::Log("rev packet::pint, time = %d, id = %d, name = %s"
+		/*
+		MyLog::Log("rev packet::pint, time = %d, id = %d, name = %s"
 			, rPacket.ansi_time()
 			, rPacket.id()
 			, rPacket.name().c_str());
+		*/
 
-			*/
 		Protobuf::SC_PONG pak;
 		pak.set_ansi_time(100);
 		PKHandlerMgr::PushPak(pak, PACKET_TYPE::SC_PONG, *this);

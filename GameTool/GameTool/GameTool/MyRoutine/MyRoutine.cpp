@@ -22,6 +22,7 @@ bool myroutine::reach_tick()
 
 void myroutine::tick()
 {
+	LOCK_RT;
 	uint64 ncurtime = MyTimeUtils::GetAnsiTimeMilliSec();
 	m_last_tick_time_ms = ncurtime;
 	tick_routine();

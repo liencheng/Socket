@@ -139,11 +139,18 @@ private:
 	MyClockTime m_TimeClock;
 };
 
+
+struct MyRoutineWrap
+{
+
+}; 
+
 using my_routine_vec = std::vector<myroutine*>;
 using my_thread_vec = std::vector<std::thread*>;
 class  MyThreadPoolEx
 {
 #define RT_LOCK std::lock_guard<std::mutex> lock(m_mutex);
+#define RT_MAP_LOCK std::lock_guard<std::mutex> lock(m_mutex_rt_map);
 public:
 	MyThreadPoolEx(int nPoolSize) :
 		m_mutex(std::mutex()),
@@ -166,15 +173,20 @@ public:
 	void release_thread();
 	void tick();
 	int32 addroutine(rt_type rttype);
+	int32 addroom(rt_type rt_type, RoomManager * pRoomMgr);
 	int32 delroutine(int rt_id);
 	myroutine * getrotuine(const RoomInfo &rRoomInfo);
 	void release_routine();
 	myroutine * takeroutine();
 	int32 next_routine_id(){ return m_next_routine_id++; };
 
-
 	room * getroom(int32 rt_id);
 	room * getroomfree();
+
+private:
+	void lock_rt(int32 rt_id);
+	void unlock_rt(int32 rt_id);
+	bool locked_rt(int32 rt_id);
 	//////////////////////////////////////////////////////////////////////////
 	//debug start
 public:
@@ -185,9 +197,12 @@ private:
 	my_thread_vec m_thread_vec;
 	my_routine_vec m_rt_vec;
 	std::mutex m_mutex;
+	std::mutex m_mutex_rt_map;
 	int32 m_poolsize;
 	int32 m_take_index;
 	int32 m_next_routine_id;
+
+	std::map<int32, bool> m_locked_rt_map;
 
 	MyClockTime m_TimeClock;
 };

@@ -5,6 +5,8 @@
 #include "windows.h"
 
 
+class RoomManager;
+
 using namespace std;
 
 std::mutex g_mutex;
@@ -253,7 +255,7 @@ void MyThreadPoolEx::tick()
 		if (nullptr != rtPtr)
 		{
 			rtPtr->tick();
-			//MyLog::Log("treadid:%d", GetCurrentThreadId());
+			unlock_rt(rtPtr->get_id());
 		}
 	};
 }
@@ -295,21 +297,36 @@ int32 MyThreadPoolEx::addroutine(rt_type rttype)
 	myroutine * rt = nullptr;
 	switch (rttype)
 	{
-	case rt_type::rt_city:
-		rt = new room_city(next_routine_id());
-		break;
-	case rt_type::rt_wild:
-		rt = new room_wild(next_routine_id());
-		break;
-	case rt_type::rt_cs:
-		rt = new room_cs(next_routine_id());
-		break;
 	case rt_type::rt_table:
 		break;
 	default:
 		break;
 	}
 
+	if (rt == nullptr)
+	{
+		return -1;
+	}
+	m_rt_vec.push_back(rt);
+	return rt->get_id();
+}
+
+int32 MyThreadPoolEx::addroom(rt_type rt_type, RoomManager * pRoomMgr)
+{
+	LOCK_RT;
+	myroutine * rt = nullptr;
+	switch (rt_type)
+	{
+	case rt_type::rt_city:
+		rt = new room_city(next_routine_id(), pRoomMgr);
+		break;
+	case rt_type::rt_wild:
+		rt = new room_wild(next_routine_id(), pRoomMgr);
+		break;
+	case rt_type::rt_cs:
+		rt = new room_cs(next_routine_id(), pRoomMgr);
+		break;
+	}
 	if (rt == nullptr)
 	{
 		return -1;
@@ -394,7 +411,7 @@ myroutine * MyThreadPoolEx::takeroutine()
 	{
 		 m_take_index = (m_take_index + idx) % routine_size;
 		 myroutine * rtPtr = m_rt_vec[m_take_index];
-		 if (nullptr != rtPtr && rtPtr->reach_tick())
+		 if (nullptr != rtPtr && !locked_rt(rtPtr->get_id()) && rtPtr->reach_tick() )
 		 {
 			 return rtPtr;
 		 }
@@ -433,4 +450,24 @@ void MyThreadPoolEx::Tick_PrintRoomInfo()
 		MyLog::Log("RoomInfo, total usercnt(%d), roomnum(%d)", nValidUser, m_rt_vec.size());
 	}
 	m_TimeClock.Tick();
+}
+
+
+void MyThreadPoolEx::lock_rt(int32 rt_id)
+{
+	RT_MAP_LOCK;
+	m_locked_rt_map[rt_id] = true;
+}
+
+void MyThreadPoolEx::unlock_rt(int32 rt_id)
+{
+	RT_MAP_LOCK;
+	m_locked_rt_map[rt_id] = false;
+}
+
+bool MyThreadPoolEx::locked_rt(int32 rt_id)
+{
+	RT_MAP_LOCK;
+	auto itF = m_locked_rt_map.find(rt_id);
+	return itF != m_locked_rt_map.end() && (itF->second == true);
 }

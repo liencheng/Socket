@@ -6,39 +6,27 @@ time_t MyTimeUtils::m_AnistimeSec = 0;
 tm * MyTimeUtils::m_LocalTime = nullptr;
 uint64 MyTimeUtils::m_AnsitimeMilliSec = 0;
 
+
 int64 MyTimeUtils::GetAnsiTime()
 {
-	if (m_AnistimeSec < 0)
-	{
-		time_t anistime = time(nullptr);
-		m_AnistimeSec = anistime;
-	}
-	return m_AnistimeSec;
+	time_t anistime = time(nullptr);
+	return anistime;
 }
 
 uint64 MyTimeUtils::GetAnsiTimeMilliSec()
 {
-	if (m_AnsitimeMilliSec < 0)
-	{
-		SYSTEMTIME sys;
-		GetLocalTime(&sys);
-		time_t anistime = time(nullptr);
-		m_AnistimeSec = anistime;
-		m_AnsitimeMilliSec = sys.wMilliseconds + (uint64)m_AnistimeSec * 1000;
-	}
-	return m_AnsitimeMilliSec;
+	SYSTEMTIME sys;
+	GetLocalTime(&sys);
+	time_t anistime = time(nullptr);
+	return sys.wMilliseconds + (uint64)anistime * 1000;
 }
 
-tm& MyTimeUtils::GetLocaltime()
+tm MyTimeUtils::GetLocaltime()
 {
-	if (nullptr == m_LocalTime)
-	{
-		int64 anistimesec = GetAnsiTime();
-		tm* pTm;
-		pTm = gmtime((time_t*)&anistimesec);
-		m_LocalTime = pTm;
-	}
-	return *(m_LocalTime);
+	int64 anistimesec = GetAnsiTime();
+	tm* pTm;
+	pTm = gmtime((time_t*)&anistimesec);
+	return *pTm;
 }
 void MyTimeUtils::init()
 {
@@ -60,6 +48,7 @@ void MyTimeUtils::tick()
 
 bool MyClockTime::DiffSec()
 {
+
 	int nAnsiSec = MyTimeUtils::GetAnsiTime();
 	if (m_AnsitimeSec != nAnsiSec)
 	{

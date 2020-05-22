@@ -11,7 +11,7 @@ public:
 
 	~User(){}
 
-	void Clean();
+	void Clean();;
 	void Tick()
 	{
 		m_ClientUser.Tick();

@@ -1,5 +1,6 @@
 #include "Room.h"
 #include "../Utils/IncIdHelper.h"
+#include "RoomManager.h"
 
 using namespace std;
 
@@ -165,5 +166,24 @@ bool room::AddUser(const ClientUser &rClientUser)
 
 bool room::IsUserFull()
 {
-	return GetValidUserCnt() >= ROOM_USER_MAX;
+	return GetValidUserCnt() + m_EnteringUser >= ROOM_USER_MAX;
+}
+
+void room::TickPullUser()
+{
+	if (nullptr == m_pRoomMgr)
+	{
+		return;
+	}
+	if (m_EnteringUser <= 0)
+	{
+		return;
+	}
+
+	ClientUser pClientUser;
+	if (m_pRoomMgr->PopUser(m_id, &pClientUser))
+	{
+		AddUser(pClientUser);
+		DecEnteringUser();
+	}
 }

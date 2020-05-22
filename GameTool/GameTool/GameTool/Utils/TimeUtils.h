@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include "../stdafx.h"
 #include <ctime>
 
@@ -12,7 +13,7 @@ private:
 public:
 	static int64 GetAnsiTime();
 	static uint64 GetAnsiTimeMilliSec();
-	static tm& GetLocaltime();
+	static tm GetLocaltime();
 	static void init();
 	static void tick();
 	

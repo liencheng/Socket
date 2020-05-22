@@ -15,7 +15,7 @@
 #define SERVER_ADDR ("127.0.0.1")
 #define	PORT (2718)
 #define BLOCK_LOG_MAX (2000)
-#define THREAD_POOL_COUNT (20)
+#define THREAD_POOL_COUNT (30)
 
 #pragma comment(lib, "WS2_32.lib")
 
@@ -23,8 +23,10 @@ class ToolManager
 {
 public:
 	ToolManager() :
-		m_rThreadPool(MyThreadPool(0)),
-		m_rThreadPoolEx(MyThreadPoolEx(THREAD_POOL_COUNT))
+		m_rThreadPool(MyThreadPool()),
+		m_rThreadPoolEx(THREAD_POOL_COUNT),
+		m_RoomManager(&m_rThreadPoolEx)
+
 	{ Clean(); };
 
 	~ToolManager(){
@@ -39,20 +41,14 @@ public:
 		FD_ZERO(&m_fs_read);
 		FD_ZERO(&m_fs_write);
 		FD_ZERO(&m_fs_exception);
-		m_RoomManager.Clean();
 	}
 	void Start()
 	{
-		InitRoomManager();
 		InitNetWork();
 		InitAddr();
 		InitListenSocket();
 
 		m_rThreadPoolEx.start();
-	}
-	void InitRoomManager()
-	{
-		m_RoomManager = RoomManager(&m_rThreadPoolEx);
 	}
 	void InitNetWork()
 	{

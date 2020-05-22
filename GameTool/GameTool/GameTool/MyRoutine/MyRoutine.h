@@ -1,7 +1,11 @@
 #pragma once
 
+#include <mutex>
 #include "../GameDefine/GameDefine_Room.h"
 #include "../Utils/TimeUtils.h"
+
+
+#define LOCK_RT std::lock_guard<std::mutex> lock(m_mutex);
 
 class myroutine
 {
@@ -29,7 +33,9 @@ public:
 protected:
 	int32 m_id;
 private:
+
 	uint64 m_tick_interval_ms;
 	uint64 m_last_tick_time_ms;
 
+	std::mutex m_mutex;
 };
