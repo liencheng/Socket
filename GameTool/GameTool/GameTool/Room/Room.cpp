@@ -6,34 +6,35 @@ using namespace std;
 
 void room::TickUser()
 {
-	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	for (int idx = 0; idx < m_ClientUser.size(); ++idx)
 	{
-		m_UserVec[idx].Tick();
+		m_ClientUser[idx].Tick();
 	}
 
 }
 
 void room::Tick_DisConnectUser()
 {
-	int nCt = m_UserVec.size();
+	int nCt = m_ClientUser.size();
 		
 	std::vector<int32> needDel;
 	for (int idx = nCt - 1; idx >= 0; --idx)
 	{
-		if (m_UserVec[idx].GetClientUser().GetNetworkState() == NetworkState::DISCONNECTED)
+		if (m_ClientUser[idx].GetNetworkState() == NetworkState::DISCONNECTED)
 		{
-			needDel.push_back(m_UserVec[idx].GetEntityId());
+			needDel.push_back(m_ClientUser[idx].GetUserPtr()->GetEntityId());
 		}
 	}
 
 	for (int idx = 0; idx < needDel.size(); ++idx)
 	{
-		for (auto it = m_UserVec.begin(); it != m_UserVec.end(); ++it)
+		for (auto it = m_ClientUser.begin(); it != m_ClientUser.end(); ++it)
 		{
-			if (it->GetEntityId() == needDel[idx])
+			if (it->GetUserPtr()->GetEntityId() == needDel[idx])
 			{
-				MyLog::Log("del disconnet:robot,{%d}", it->GetClientUser().m_UserId);
-				m_UserVec.erase(it);
+				MyLog::Log("del disconnet:robot,{%d}", (*it).m_UserId);
+				POOL_FREE(User, it->GetUserPtr());
+				m_ClientUser.erase(it);
 				DecValidUserCnt();
 				break;;
 			}
@@ -44,7 +45,7 @@ void room::Tick_DisConnectUser()
 
 void room::Tick_ProcessSocket()
 {
-	if (m_UserVec.size() <= 0)
+	if (m_ClientUser.size() <= 0)
 	{
 		return;
 	}
@@ -52,15 +53,15 @@ void room::Tick_ProcessSocket()
 	FD_ZERO(&m_fs_write);
 	FD_ZERO(&m_fs_exception);
 
-	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	for (int idx = 0; idx < m_ClientUser.size(); ++idx)
 	{
-		if (m_UserVec[idx].GetClientUser().GetNetworkState() != NetworkState::CONNECTED)
+		if (m_ClientUser[idx].GetNetworkState() != NetworkState::CONNECTED)
 		{
 			continue;
 		}
-		FD_SET(m_UserVec[idx].GetClientUser().m_socket.m_socket, &m_fs_read);
-		FD_SET(m_UserVec[idx].GetClientUser().m_socket.m_socket, &m_fs_write);
-		FD_SET(m_UserVec[idx].GetClientUser().m_socket.m_socket, &m_fs_exception);
+		FD_SET(m_ClientUser[idx].m_socket.m_socket, &m_fs_read);
+		FD_SET(m_ClientUser[idx].m_socket.m_socket, &m_fs_write);
+		FD_SET(m_ClientUser[idx].m_socket.m_socket, &m_fs_exception);
 	}
 	timeval tv;
 	tv.tv_usec = 0;
@@ -82,9 +83,9 @@ void room::Tick_ProcessSocket()
 void room::Tick_ProcessException()
 {
 	int nValidSock = 0;
-	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	for (int idx = 0; idx < m_ClientUser.size(); ++idx)
 	{
-		SOCKET sock = m_UserVec[idx].GetClientUser().m_socket.m_socket;
+		SOCKET sock = m_ClientUser[idx].m_socket.m_socket;
 		if (FD_ISSET(sock, &m_fs_exception))
 		{
 		}
@@ -94,9 +95,9 @@ void room::Tick_ProcessException()
 void room::Tick_ProcessInput()
 {
 	int nValidSock = 0;
-	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	for (int idx = 0; idx < m_ClientUser.size(); ++idx)
 	{
-		SOCKET sock = m_UserVec[idx].GetClientUser().m_socket.m_socket;
+		SOCKET sock = m_ClientUser[idx].m_socket.m_socket;
 		
 		if (FD_ISSET(sock, &m_fs_read) && !FD_ISSET(sock, &m_fs_exception))
 		{
@@ -115,13 +116,13 @@ void room::Tick_ProcessInput()
 
 				MyLog::Log("recv. socket error. sock:{%d}, errorno:{%d}" ,sock, errorno);
 
-				m_UserVec[idx].GetClientUser().SetNetworkState(NetworkState::DISCONNECTED);
+				m_ClientUser[idx].SetNetworkState(NetworkState::DISCONNECTED);
 			}
 			else
 			{
-				InputStream &sockstream = m_UserVec[idx].GetClientUser().GetInputStream();
+				InputStream &sockstream = m_ClientUser[idx].GetInputStream();
 				sockstream.Write((char*)buf, recvlen);
-				m_UserVec[idx].GetClientUser().ProcessInput();
+				m_ClientUser[idx].ProcessInput();
 			}
 		}
 	}
@@ -129,12 +130,12 @@ void room::Tick_ProcessInput()
 
 void room::Tick_ProcessOutput()
 {
-	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	for (int idx = 0; idx < m_ClientUser.size(); ++idx)
 	{
-		SOCKET sock = m_UserVec[idx].GetClientUser().m_socket.m_socket;
+		SOCKET sock = m_ClientUser[idx].m_socket.m_socket;
 		if (FD_ISSET(sock, &m_fs_write))
 		{
-			m_UserVec[idx].GetClientUser().ProcessOutput();
+			m_ClientUser[idx].ProcessOutput();
 		}
 	}
 }
@@ -142,9 +143,9 @@ void room::Tick_ProcessOutput()
 void room::Tick_PrintPoolInfo()
 {
 	int connectedCnt = 0;
-	for (int idx = 0; idx < m_UserVec.size(); ++idx)
+	for (int idx = 0; idx < m_ClientUser.size(); ++idx)
 	{
-		if (m_UserVec[idx].GetClientUser().GetNetworkState() == NetworkState::CONNECTED)
+		if (m_ClientUser[idx].GetNetworkState() == NetworkState::CONNECTED)
 		{
 			connectedCnt++;
 		}
@@ -154,11 +155,9 @@ void room::Tick_PrintPoolInfo()
 
 bool room::AddUser(const ClientUser &rClientUser)
 {
-	User newUser = User();
-	newUser.SetClientUser(rClientUser);
-	newUser.SetEntityId(INCID_GEN(USER));
-	newUser.GetClientUser().SetLastActiveTime(MyTimeUtils::GetAnsiTime());
-	m_UserVec.push_back(newUser);
+	UserPtr userPtr = rClientUser.GetUserPtr();
+	if (!userPtr)return false;
+	m_ClientUser.push_back(rClientUser);
 	IncValidUserCnt();
 	return true;
 }

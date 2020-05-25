@@ -116,6 +116,9 @@
     <ClInclude Include="Room\RoomManager.h">
       <Filter>Source\Room</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\ObjPool.h">
+      <Filter>Source\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -166,8 +169,11 @@
     <ClCompile Include="Utils\IncIdHelper.cpp">
       <Filter>Source\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\ObjPool.cpp">
+      <Filter>Source\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="Room\RoomManager.cpp">
-      <Filter>Source\Room</Filter>
+      <Filter>Source\Utils</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

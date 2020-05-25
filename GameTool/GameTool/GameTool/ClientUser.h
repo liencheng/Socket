@@ -8,7 +8,11 @@
 #include "Public/SocketStream/SocketStream.h"
 #include <iostream>
 #include "Packet/PKHandlerMgr.h"
+#include "boost/shared_ptr.hpp"
 
+class User;
+
+typedef boost::shared_ptr<User> UserPtr;
 
 class ClientUser
 {
@@ -17,12 +21,7 @@ public:
 	{
 		Clean();
 	}
-	ClientUser(int userId, MySocket& sock)
-		:m_UserId(userId)
-		, m_socket(sock)
-	{
-		Clean();
-	};
+	ClientUser(int userId, MySocket& sock);
 
 	ClientUser(const ClientUser &rUser)
 	{
@@ -69,12 +68,14 @@ public:
 	int32 GetUserId() const { return m_UserId; }
 	void SetUserId(int32 nVal){ m_UserId = nVal; }
 	void SetLastActiveTime(int32 ansi){ m_socket.SetLastActiveTime(ansi); }
+	UserPtr GetUserPtr() const { return m_UserPtr; }
 public:
 	void CopyFrom(const ClientUser &rCUser)
 	{
 		m_UserId = rCUser.GetUserId();
 		m_socket = rCUser.GetSocket();
 		m_NetworkState = rCUser.GetNetworkState();
+		m_UserPtr = rCUser.GetUserPtr();
 	}
 
 	ClientUser& operator=(const ClientUser& rFrom)
@@ -96,4 +97,5 @@ private:
 	InputStream m_SockData;
 	OutputStream m_SendBuf;
 	NetworkState m_NetworkState;
+	UserPtr m_UserPtr;
 };

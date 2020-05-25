@@ -7,3 +7,4 @@ enum class NetworkState
 	CONNECTING = 1,
 	DISCONNECTED = 2,
 };
+

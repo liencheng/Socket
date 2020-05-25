@@ -3,8 +3,21 @@
 #include "GameDefine/GameDefine_Packet.h"
 #include "Packet/Handler/PacketBase.h"
 #include "Packet/PKHandlerMgr.h"
+#include "Room/Entity/User.h"
+#include "boost/make_shared.hpp"
+#include "Utils/IncIdHelper.h"
 
 using namespace std;
+
+
+ClientUser::ClientUser(int userId, MySocket& sock)
+{
+	Clean();
+	SetLastActiveTime(MyTimeUtils::GetAnsiTime());
+	m_socket = sock;
+	m_UserPtr = POOL_ALLOC(User);
+	m_UserPtr->SetEntityId(INCID_GEN(USER));
+}
 
 void ClientUser::ProcessInput()
 {

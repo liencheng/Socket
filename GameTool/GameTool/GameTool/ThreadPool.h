@@ -153,7 +153,6 @@ class  MyThreadPoolEx
 #define RT_MAP_LOCK std::lock_guard<std::mutex> lock(m_mutex_rt_map);
 public:
 	MyThreadPoolEx(int nPoolSize) :
-		m_mutex(std::mutex()),
 		m_poolsize(nPoolSize)
 	{
 		Clean();

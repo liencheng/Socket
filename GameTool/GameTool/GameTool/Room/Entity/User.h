@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../ClientUser.h"
+#include "../../Utils/ObjPool.h"
 
 class User
 {
@@ -11,19 +12,17 @@ public:
 
 	~User(){}
 
-	void Clean();;
-	void Tick()
-	{
-		m_ClientUser.Tick();
-	}
+	void Clean();
 
 	int32 GetEntityId() const { return m_EntityId; }
 	void SetEntityId(int32 nVal){ m_EntityId = nVal; }
 	
-	void SetClientUser(const ClientUser &rClientUser){ m_ClientUser = rClientUser; }
-	ClientUser& GetClientUser() { return m_ClientUser; }
 
 private:
+	uint64_t m_UserGuid;
+	std::string m_UserName;
 	int32 m_EntityId;
-	ClientUser	m_ClientUser;
+
 };
+
+POOL_DEF(User);

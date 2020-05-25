@@ -43,6 +43,7 @@ void ToolManager::AcceptNewPlayer()
 
 	ClientUser user(GEN_USER_GUID(), mySock);
 	user.SetNetworkState(NetworkState::CONNECTED);
+	user.SetLastActiveTime(MyTimeUtils::GetAnsiTime());
 	RoomInfo roomInfo;
 	roomInfo.RoomId = -1;
 	roomInfo.RoomType = (int32)rt_type::rt_city;

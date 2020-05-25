@@ -28,7 +28,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -86,7 +86,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);</PreprocessorDefinitions>
       <SDLCheck>false</SDLCheck>
-      <AdditionalIncludeDirectories>../..\Tool\protobuf\protobuf-2.6.1\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..\Tool\protobuf\protobuf-2.6.1\src;../../Tool/\boost_1_73_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile />
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
     </ClCompile>
@@ -94,6 +94,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>..\..\Tool\protobuf\libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\Tool\boost_1_73_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -174,6 +175,7 @@
     <ClInclude Include="Utils\GuidHelper.h" />
     <ClInclude Include="Utils\IncIdHelper.h" />
     <ClInclude Include="Utils\MyLog.h" />
+    <ClInclude Include="Utils\ObjPool.h" />
     <ClInclude Include="Utils\TimeUtils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +200,7 @@
     <ClCompile Include="Utils\GuidHelper.cpp" />
     <ClCompile Include="Utils\IncIdHelper.cpp" />
     <ClCompile Include="Utils\MyLog.cpp" />
+    <ClCompile Include="Utils\ObjPool.cpp" />
     <ClCompile Include="Utils\TimeUtils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

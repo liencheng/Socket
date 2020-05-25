@@ -79,7 +79,8 @@ private:
 	fd_set m_fs_read;
 	fd_set m_fs_write;
 	fd_set m_fs_exception;
-	std::vector<User> m_UserVec;
+	std::vector<UserPtr> m_UserVec;
+	std::vector<ClientUser> m_ClientUser;
 	int m_ValidUserCnt;
 	std::atomic_int32_t m_EnteringUser;
 	//////////////////////////////////////////////////////////////////////////
