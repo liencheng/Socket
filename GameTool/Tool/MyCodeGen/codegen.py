@@ -167,7 +167,10 @@ def get_functon_name(line):
 
 def get_function_body(func_name, func_list):
 	for func in func_list:
-		if func.name == func_name:
+		print(func.name)
+		print("p:" + func_name)
+		if func.name.strip() == func_name.strip():
+			print("equlalllllllllllllllll")
 			return func
 	return None
 
@@ -201,11 +204,12 @@ def process_sentence(line, define_ini, func_list):
 		if len(func_name) >0:
 			func = get_function_body(func_name, func_list)
 			if func is None:
-				return
+				print("None")
+				return body
 			for func_line in func.body:
 				line_result = process_text(func_line, define_ini)
 				for line_i in line_result:
-					body.append(line)
+					body.append(line_i)
 		return body
 	#文本，处理完输出
 	else:

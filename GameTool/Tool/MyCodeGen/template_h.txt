@@ -40,29 +40,13 @@ class ({@classname})
 	}
 @end
 	
-@f:operate==
-	bool operate==(const {@c} &rFrom)
-	{
-		bool bEqual = true;
-		bEqual  = (bEqual
-		{@elem_list}$ && ({@elem} == rFrom.Get{@elem}())
-		);
-		return bEqual;
-	}
-
-	bool operate!=(const {@c} &rFrom)
-	{
-		bool bEqual =(*this == rFrom);
-		return !bEqual;
-	}
-@end
+@function:operate==
 
 @function:get
 
-@f:Get
-	{@elem_list}${@type} Get{@elem}() const {return {@elem};}
-@f:Set
-    {@elem_list}$void Set{@elem}({@type} val){{@elem} = val;}
+@function:set
+
+
 @:endclass
 };
 

@@ -106,6 +106,6 @@
 @end
 
 @start:set
-    void Set{@elem}({@type} val){{@elem} = val;}
+    {@elem_list}$void Set{@elem}({@type} val){{@elem} = val;}
 @end
 
