@@ -1,0 +1,111 @@
+--说明，
+
+@start:map_get_elem_by_id
+	const {@elemref} Get{@elem}ById(int32 nId)
+	{
+		for (auto &it: {@map_container})
+		{
+			if(it.second.GetId() == nId)
+			{
+				return it.second;
+			}
+		}
+		static {@elem} invalid;
+		return invalid;
+	}
+@end
+
+@start:map_get_elem_by_guid
+	const {@elemref} Get{@elem}ById(MyGuid guid)
+	{
+		for (auto &it: {@map_container})
+		{
+			if(it.second.GetGuid() == guid)
+			{
+				return it.second;
+			}
+		}
+		static {@elem} invalid;
+		return invalid;
+	}
+@end
+
+@start:vector_get_elem_by_id
+	const {@elemref} Get{@elem}ById(int32 nId)
+	{
+		for (auto &elem: {@vector_container})
+		{
+			if(elem.GetId() == nId)
+			{
+				return elem;
+			}
+		}
+		static {@elem} invalid;
+		return invalid;
+	}
+@end
+
+@start:vector_get_elem_by_guid
+	const {@elemref} Get{@elem}ById(MyGuid guid)
+	{
+		for (auto &elem: {@vector_container})
+		{
+			if(elem.GetGuid() == guid)
+			{
+				return elem;
+			}
+		}
+		static {@elem} invalid;
+		return invalid;
+	}
+@end
+
+@start:clean
+	void Clean()
+	{
+		{@elem_list}${@elem} = {@elem_default};
+
+	}
+@end
+
+@start:operate=
+	void CopyFrom(const {@classname}& rFrom)
+	{
+		{@elem_list}${@elem} = rFrom.Get{@elem}();
+	}
+	
+	{@classname} & operate=(const {@classname} &rFrom)
+	{
+		if(this != &rFrom)
+		{
+			this->CopyFrom(rFrom);
+		}
+		return *this;
+	}
+@end
+
+@start:operate==
+	bool operate==(const {@c} &rFrom)
+	{
+		bool bEqual = true;
+		bEqual  = (bEqual
+		{@elem_list}$ && ({@elem} == rFrom.Get{@elem}())
+		);
+		return bEqual;
+	}
+
+	bool operate!=(const {@c} &rFrom)
+	{
+		bool bEqual =(*this == rFrom);
+		return !bEqual;
+	}
+@end
+
+@start:get
+	{@elem_list}${@type} Get{@elem}() const {return {@elem};}
+@end
+
+@start:set
+    void Set{@elem}({@type} val){{@elem} = val;}
+@end
+

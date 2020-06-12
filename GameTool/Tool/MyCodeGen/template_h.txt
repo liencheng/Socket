@@ -1,0 +1,71 @@
+--说明
+--
+--{$}：换行
+--{@classname}：类名
+--{@c}：类名
+--{@elem}：成员变量
+--{@elem_default}:默认值
+--{@elem_list}成员变量列表
+--@Clean：Clean方法
+--@f:Get：Get方法群
+--@f:Set：Set方法群
+
+#parame once
+class ({@classname})
+{
+@:startclass
+	{@classname}(){};
+	~{@classname}(){};
+@f:Clean
+	void Clean()
+	{
+		{@elem_list}${@elem} = {@elem_default};
+
+	}
+@end
+	
+@f:operate=
+	void CopyFrom(const {@classname}& rFrom)
+	{
+		{@elem_list}${@elem} = rFrom.Get{@elem}();
+	}
+	
+	{@classname} & operate=(const {@classname} &rFrom)
+	{
+		if(this != &rFrom)
+		{
+			this->CopyFrom(rFrom);
+		}
+		return *this;
+	}
+@end
+	
+@f:operate==
+	bool operate==(const {@c} &rFrom)
+	{
+		bool bEqual = true;
+		bEqual  = (bEqual
+		{@elem_list}$ && ({@elem} == rFrom.Get{@elem}())
+		);
+		return bEqual;
+	}
+
+	bool operate!=(const {@c} &rFrom)
+	{
+		bool bEqual =(*this == rFrom);
+		return !bEqual;
+	}
+@end
+
+@function:get
+
+@f:Get
+	{@elem_list}${@type} Get{@elem}() const {return {@elem};}
+@f:Set
+    {@elem_list}$void Set{@elem}({@type} val){{@elem} = val;}
+@:endclass
+};
+
+
+
+
